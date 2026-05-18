@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Tasks</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f4;
+      --bg-tertiary: #eeede9;
+      --text: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-tertiary: #a0a0a0;
+      --border: rgba(0,0,0,0.12);
+      --border-md: rgba(0,0,0,0.22);
+      --border-strong: rgba(0,0,0,0.35);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --success-bg: #eaf3de;
+      --success-text: #3b6d11;
+      --success-border: #639922;
+      --danger-bg: #fcebeb;
+      --danger-text: #a32d2d;
+      --warning-bg: #faeeda;
+      --warning-text: #854f0b;
+      --info-bg: #e6f1fb;
+      --info-text: #185fa5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1e1e1c;
+        --bg-secondary: #282825;
+        --bg-tertiary: #323230;
+        --text: #f0ede8;
+        --text-secondary: #a8a49e;
+        --text-tertiary: #6b6762;
+        --border: rgba(255,255,255,0.1);
+        --border-md: rgba(255,255,255,0.18);
+        --border-strong: rgba(255,255,255,0.3);
+        --success-bg: #173404;
+        --success-text: #c0dd97;
+        --success-border: #3b6d11;
+        --danger-bg: #501313;
+        --danger-text: #f09595;
+        --warning-bg: #412402;
+        --warning-text: #fac775;
+        --info-bg: #042c53;
+        --info-text: #85b7eb;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-tertiary);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .app {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .header { margin-bottom: 2rem; }
+    .title {
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .title i { font-size: 26px; }
+    .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+
+    .input-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+
+    input[type="text"] {
+      flex: 1;
+      height: 42px;
+      padding: 0 14px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input[type="text"]::placeholder { color: var(--text-tertiary); }
+    input[type="text"]:focus {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 3px rgba(128,128,128,0.08);
+    }
+
+    select {
+      height: 42px;
+      padding: 0 10px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .add-btn {
+      height: 42px;
+      padding: 0 18px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: background 0.12s;
+    }
+    .add-btn:hover { background: var(--bg-secondary); }
+    .add-btn:active { transform: scale(0.98); }
+
+    .filters { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      transition: all 0.12s;
+    }
+    .filter-btn:hover { background: var(--bg-secondary); color: var(--text); }
+    .filter-btn.active {
+      background: var(--bg);
+      border-color: var(--border-strong);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .task-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: border-color 0.12s, opacity 0.15s;
+      animation: slideIn 0.18s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .task-item:hover { border-color: var(--border-md); }
+    .task-item.done { opacity: 0.55; }
+
+    .check-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-md);
+      background: transparent;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .check-btn:hover { border-color: var(--border-strong); background: var(--bg-secondary); }
+    .check-btn.checked {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+    .check-btn.checked i { color: var(--success-text); font-size: 13px; }
+
+    .task-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .task-text.done-text {
+      text-decoration: line-through;
+      color: var(--text-tertiary);
+    }
+
+    .priority-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 10px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .p-high { background: var(--danger-bg);  color: var(--danger-text); }
+    .p-med  { background: var(--warning-bg); color: var(--warning-text); }
+    .p-low  { background: var(--info-bg);    color: var(--info-text); }
+
+    .del-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      transition: all 0.12s;
+    }
+    .del-btn:hover { background: var(--danger-bg); color: var(--danger-text); }
+
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-tertiary);
+      font-size: 14px;
+    }
+    .empty i { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.4; }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 0.5px solid var(--border);
+    }
+    .stat {
+      flex: 1;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+    }
+    .stat-val { font-size: 20px; font-weight: 500; color: var(--text); }
+    .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="title">
+        <i class="ti ti-checklist"></i>
+        My tasks
+      </div>
+      <div class="subtitle" id="date-label"></div>
+    </div>
+
+    <div class="input-row">
+      <input type="text" id="task-input" placeholder="Add a new task..." />
+      <select id="priority-sel">
+        <option value="low">Low</option>
+        <option value="med" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+      <button class="add-btn" onclick="addTask()">
+        <i class="ti ti-plus"></i> Add
+      </button>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">All</button>
+      <button class="filter-btn"        id="f-active" onclick="setFilter('active')">Active</button>
+      <button class="filter-btn"        id="f-done"   onclick="setFilter('done')">Done</button>
+    </div>
+
+    <div class="task-list" id="task-list"></div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem('todos_v1') || 'null') || [
+      { id: 1, text: 'Review project requirements',     done: false, priority: 'high' },
+      { id: 2, text: 'Set up development environment',  done: true,  priority: 'med'  },
+      { id: 3, text: 'Write unit tests',                done: false, priority: 'med'  },
+      { id: 4, text: 'Update documentation',            done: false, priority: 'low'  },
+    ];
+    let filter = 'all';
+    let nextId = tasks.reduce((m, t) => Math.max(m, t.id), 0) + 1;
+
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const now = new Date();
+    document.getElementById('date-label').textContent =
+      `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+
+    function save() { localStorage.setItem('todos_v1', JSON.stringify(tasks)); }
+
+    function setFilter(f) {
+      filter = f;
+      ['all','active','done'].forEach(x =>
+        document.getElementById('f-'+x).classList.toggle('active', x === f));
+      render();
+    }
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      const text  = input.value.trim();
+      if (!text) return;
+      const priority = document.getElementById('priority-sel').value;
+      tasks.unshift({ id: nextId++, text, done: false, priority });
+      input.value = '';
+      save(); render();
+    }
+
+    function toggle(id) {
+      const t = tasks.find(t => t.id === id);
+      if (t) { t.done = !t.done; save(); render(); }
+    }
+
+    function del(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      save(); render();
+    }
+
+    document.getElementById('task-input')
+      .addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function render() {
+      const visible = tasks.filter(t =>
+        filter === 'all' ? true : filter === 'active' ? !t.done : t.done);
+
+      const list = document.getElementById('task-list');
+      if (!visible.length) {
+        list.innerHTML = `<div class="empty">
+          <i class="ti ti-inbox"></i>
+          ${filter === 'done'   ? 'No completed tasks yet.'
+          : filter === 'active' ? 'All tasks are done! 🎉'
+          : 'No tasks yet — add one above.'}
+        </div>`;
+      } else {
+        list.innerHTML = visible.map(t => `
+          <div class="task-item${t.done ? ' done' : ''}">
+            <button class="check-btn${t.done ? ' checked' : ''}"
+                    onclick="toggle(${t.id})"
+                    aria-label="${t.done ? 'Mark incomplete' : 'Mark complete'}">
+              ${t.done ? '<i class="ti ti-check"></i>' : ''}
+            </button>
+            <span class="task-text${t.done ? ' done-text' : ''}">${escHtml(t.text)}</span>
+            <span class="priority-badge p-${t.priority}">
+              ${t.priority === 'high' ? 'High' : t.priority === 'med' ? 'Medium' : 'Low'}
+            </span>
+            <button class="del-btn" onclick="del(${t.id})" aria-label="Delete task">
+              <i class="ti ti-trash"></i>
+            </button>
+          </div>`).join('');
+      }
+
+      const total  = tasks.length;
+      const done   = tasks.filter(t => t.done).length;
+      const active = total - done;
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><div class="stat-val">${total}</div><div class="stat-label">Total</div></div>
+        <div class="stat"><div class="stat-val">${active}</div><div class="stat-label">Active</div></div>
+        <div class="stat"><div class="stat-val">${done}</div><div class="stat-label">Done</div></div>
+        <div class="stat"><div class="stat-val">${total ? Math.round(done/total*100) : 0}%</div><div class="stat-label">Complete</div></div>`;
+    }
+
+    render();
+  </script>
+</body>
+</html>
