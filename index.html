@@ -7,379 +7,354 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #ffffff;
-      --bg-secondary: #f5f5f4;
-      --bg-tertiary: #eeede9;
-      --text: #1a1a1a;
-      --text-secondary: #6b6b6b;
-      --text-tertiary: #a0a0a0;
-      --border: rgba(0,0,0,0.12);
-      --border-md: rgba(0,0,0,0.22);
-      --border-strong: rgba(0,0,0,0.35);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --success-bg: #eaf3de;
-      --success-text: #3b6d11;
-      --success-border: #639922;
-      --danger-bg: #fcebeb;
-      --danger-text: #a32d2d;
-      --warning-bg: #faeeda;
-      --warning-text: #854f0b;
-      --info-bg: #e6f1fb;
-      --info-text: #185fa5;
+      --bg: #ffffff; --bg-secondary: #f5f5f4; --bg-tertiary: #eeede9;
+      --text: #1a1a1a; --text-secondary: #6b6b6b; --texta-tertiary: #a0a0a0;
+      --border: rgba(0,0,0,0.12); --border-md: rgba(0,0,0,0.22); --border-strong: rgba(0,0,0,0.35);
+      --radius-md: 8px; --radius-lg: 12px;
+      --success-bg: #eaf3de; --success-text: #3b6d11; --success-border: #639922;
+      --danger-bg: #fcebeb; --danger-text: #a32d2d;
+      --warning-bg: #faeeda; --warning-text: #854f0b;
+      --info-bg: #e6f1fb; --info-text: #185fa5;
+      --ai-bg: #f3f0ff; --ai-text: #5b21b6; --ai-border: #c4b5fd;
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #1e1e1c;
-        --bg-secondary: #282825;
-        --bg-tertiary: #323230;
-        --text: #f0ede8;
-        --text-secondary: #a8a49e;
-        --text-tertiary: #6b6762;
-        --border: rgba(255,255,255,0.1);
-        --border-md: rgba(255,255,255,0.18);
-        --border-strong: rgba(255,255,255,0.3);
-        --success-bg: #173404;
-        --success-text: #c0dd97;
-        --success-border: #3b6d11;
-        --danger-bg: #501313;
-        --danger-text: #f09595;
-        --warning-bg: #412402;
-        --warning-text: #fac775;
-        --info-bg: #042c53;
-        --info-text: #85b7eb;
+        --bg: #1e1e1c; --bg-secondary: #282825; --bg-tertiary: #323230;
+        --text: #f0ede8; --text-secondary: #a8a49e; --text-tertiary: #6b6762;
+        --border: rgba(255,255,255,0.1); --border-md: rgba(255,255,255,0.18); --border-strong: rgba(255,255,255,0.3);
+        --success-bg: #173404; --success-text: #c0dd97; --success-border: #3b6d11;
+        --danger-bg: #501313; --danger-text: #f09595;
+        --warning-bg: #412402; --warning-text: #fac775;
+        --info-bg: #042c53; --info-text: #85b7eb;
+        --ai-bg: #1e1433; --ai-text: #c4b5fd; --ai-border: #5b21b6;
       }
     }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-tertiary);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 2rem 1rem;
-    }
-
-    .app {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .header { margin-bottom: 2rem; }
-    .title {
-      font-size: 28px;
-      font-weight: 500;
-      color: var(--text);
-      letter-spacing: -0.5px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .title i { font-size: 26px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-tertiary); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+    .app { max-width: 640px; margin: 0 auto; }
+    .header { margin-bottom: 1.75rem; }
+    .title { font-size: 28px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
     .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
 
-    .input-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+    .api-banner { background: var(--ai-bg); border: 1px solid var(--ai-border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .api-banner i { color: var(--ai-text); font-size: 20px; flex-shrink: 0; }
+    .api-banner-text { flex: 1; font-size: 13px; color: var(--ai-text); min-width: 150px; }
+    .api-banner-text strong { display: block; margin-bottom: 2px; }
+    .api-input-row { display: flex; gap: 6px; flex: 2; min-width: 220px; }
+    .api-input { flex: 1; height: 34px; padding: 0 10px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--bg); color: var(--text); font-size: 13px; font-family: monospace; outline: none; }
+    .api-save-btn { height: 34px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--ai-bg); color: var(--ai-text); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .api-save-btn:hover { opacity: 0.8; }
+    .api-saved { font-size: 12px; color: var(--success-text); display: flex; align-items: center; gap: 4px; }
 
-    input[type="text"] {
-      flex: 1;
-      height: 42px;
-      padding: 0 14px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border-md);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
+    .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    input[type="text"] { flex: 1; height: 42px; padding: 0 14px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg); color: var(--text); font-size: 15px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
     input[type="text"]::placeholder { color: var(--text-tertiary); }
-    input[type="text"]:focus {
-      border-color: var(--border-strong);
-      box-shadow: 0 0 0 3px rgba(128,128,128,0.08);
-    }
-
-    select {
-      height: 42px;
-      padding: 0 10px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border-md);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      cursor: pointer;
-      outline: none;
-    }
-
-    button {
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    .add-btn {
-      height: 42px;
-      padding: 0 18px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border-md);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      transition: background 0.12s;
-    }
+    input[type="text"]:focus { border-color: var(--border-strong); box-shadow: 0 0 0 3px rgba(128,128,128,0.08); }
+    select { height: 42px; padding: 0 10px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg); color: var(--text); font-size: 14px; cursor: pointer; outline: none; }
+    button { cursor: pointer; font-family: inherit; }
+    .add-btn { height: 42px; padding: 0 18px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg); color: var(--text); font-size: 14px; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: background 0.12s; }
     .add-btn:hover { background: var(--bg-secondary); }
     .add-btn:active { transform: scale(0.98); }
 
+    .ai-action-row { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .ai-btn { height: 34px; padding: 0 13px; border-radius: 20px; border: 1px solid var(--ai-border); background: var(--ai-bg); color: var(--ai-text); font-size: 13px; display: flex; align-items: center; gap: 5px; white-space: nowrap; transition: opacity 0.12s; }
+    .ai-btn:hover { opacity: 0.75; }
+    .ai-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ai-btn i { font-size: 15px; }
+
     .filters { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
-    .filter-btn {
-      padding: 6px 16px;
-      border-radius: 20px;
-      border: 0.5px solid var(--border);
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 13px;
-      transition: all 0.12s;
-    }
+    .filter-btn { padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; transition: all 0.12s; }
     .filter-btn:hover { background: var(--bg-secondary); color: var(--text); }
-    .filter-btn.active {
-      background: var(--bg);
-      border-color: var(--border-strong);
-      color: var(--text);
-      font-weight: 500;
-    }
+    .filter-btn.active { background: var(--bg); border-color: var(--border-strong); color: var(--text); font-weight: 500; }
 
     .task-list { display: flex; flex-direction: column; gap: 6px; }
-
-    .task-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      transition: border-color 0.12s, opacity 0.15s;
-      animation: slideIn 0.18s ease;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: none; }
-    }
+    .task-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); transition: border-color 0.12s, opacity 0.15s; animation: slideIn 0.18s ease; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
     .task-item:hover { border-color: var(--border-md); }
     .task-item.done { opacity: 0.55; }
-
-    .check-btn {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 1.5px solid var(--border-md);
-      background: transparent;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
+    .check-btn { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-md); background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
     .check-btn:hover { border-color: var(--border-strong); background: var(--bg-secondary); }
-    .check-btn.checked {
-      background: var(--success-bg);
-      border-color: var(--success-border);
-    }
+    .check-btn.checked { background: var(--success-bg); border-color: var(--success-border); }
     .check-btn.checked i { color: var(--success-text); font-size: 13px; }
-
-    .task-text {
-      flex: 1;
-      font-size: 15px;
-      color: var(--text);
-      line-height: 1.4;
-      word-break: break-word;
-    }
-    .task-text.done-text {
-      text-decoration: line-through;
-      color: var(--text-tertiary);
-    }
-
-    .priority-badge {
-      font-size: 11px;
-      padding: 3px 9px;
-      border-radius: 10px;
-      font-weight: 500;
-      flex-shrink: 0;
-    }
+    .task-text { flex: 1; font-size: 15px; color: var(--text); line-height: 1.4; word-break: break-word; }
+    .task-text.done-text { text-decoration: line-through; color: var(--text-tertiary); }
+    .priority-badge { font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 500; flex-shrink: 0; }
     .p-high { background: var(--danger-bg);  color: var(--danger-text); }
     .p-med  { background: var(--warning-bg); color: var(--warning-text); }
     .p-low  { background: var(--info-bg);    color: var(--info-text); }
-
-    .del-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: var(--radius-md);
-      border: none;
-      background: transparent;
-      color: var(--text-tertiary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      flex-shrink: 0;
-      transition: all 0.12s;
-    }
+    .del-btn { width: 30px; height: 30px; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-tertiary); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; transition: all 0.12s; }
     .del-btn:hover { background: var(--danger-bg); color: var(--danger-text); }
-
-    .empty {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-tertiary);
-      font-size: 14px;
-    }
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--text-tertiary); font-size: 14px; }
     .empty i { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.4; }
 
-    .stats {
-      display: flex;
-      gap: 10px;
-      margin-top: 1.5rem;
-      padding-top: 1.25rem;
-      border-top: 0.5px solid var(--border);
-    }
-    .stat {
-      flex: 1;
-      background: var(--bg-secondary);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-    }
-    .stat-val { font-size: 20px; font-weight: 500; color: var(--text); }
+    .stats { display: flex; gap: 10px; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+    .stat { flex: 1; background: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px 14px; }
+    .stat-val { font-size: 20px; font-weight: 500; }
     .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: fadeUp 0.2s ease; z-index: 999; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ai-preview { background: var(--ai-bg); border: 1px solid var(--ai-border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1rem; animation: slideIn 0.18s ease; }
+    .ai-preview-title { font-size: 13px; font-weight: 600; color: var(--ai-text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .ai-preview-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--ai-border); font-size: 14px; }
+    .ai-preview-item:last-child { border-bottom: none; }
+    .ai-preview-item input[type="checkbox"] { accent-color: var(--ai-text); width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
+    .ai-preview-item label { flex: 1; cursor: pointer; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; flex-shrink: 0; }
+    .ai-preview-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .confirm-btn { height: 32px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--ai-text); color: #fff; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .confirm-btn:hover { opacity: 0.85; }
+    .cancel-btn { height: 32px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--border-md); background: transparent; color: var(--text-secondary); font-size: 13px; }
+    .cancel-btn:hover { background: var(--bg-secondary); }
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="header">
-      <div class="title">
-        <i class="ti ti-checklist"></i>
-        My tasks
-      </div>
-      <div class="subtitle" id="date-label"></div>
-    </div>
-
-    <div class="input-row">
-      <input type="text" id="task-input" placeholder="Add a new task..." />
-      <select id="priority-sel">
-        <option value="low">Low</option>
-        <option value="med" selected>Medium</option>
-        <option value="high">High</option>
-      </select>
-      <button class="add-btn" onclick="addTask()">
-        <i class="ti ti-plus"></i> Add
-      </button>
-    </div>
-
-    <div class="filters">
-      <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">All</button>
-      <button class="filter-btn"        id="f-active" onclick="setFilter('active')">Active</button>
-      <button class="filter-btn"        id="f-done"   onclick="setFilter('done')">Done</button>
-    </div>
-
-    <div class="task-list" id="task-list"></div>
-    <div class="stats" id="stats"></div>
+<div class="app">
+  <div class="header">
+    <div class="title"><i class="ti ti-checklist"></i> My Tasks</div>
+    <div class="subtitle" id="date-label"></div>
   </div>
 
-  <script>
-    let tasks = JSON.parse(localStorage.getItem('todos_v1') || 'null') || [
-      { id: 1, text: 'Review project requirements',     done: false, priority: 'high' },
-      { id: 2, text: 'Set up development environment',  done: true,  priority: 'med'  },
-      { id: 3, text: 'Write unit tests',                done: false, priority: 'med'  },
-      { id: 4, text: 'Update documentation',            done: false, priority: 'low'  },
-    ];
-    let filter = 'all';
-    let nextId = tasks.reduce((m, t) => Math.max(m, t.id), 0) + 1;
+  <div class="api-banner" id="api-banner">
+    <i class="ti ti-robot"></i>
+    <div class="api-banner-text">
+      <strong>AI Features</strong>
+      Paste your Anthropic API key to unlock AI features (stored only in your browser).
+    </div>
+    <div class="api-input-row">
+      <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-..." />
+      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
+    </div>
+  </div>
 
-    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const now = new Date();
-    document.getElementById('date-label').textContent =
-      `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+  <div class="input-row">
+    <input type="text" id="task-input" placeholder="Describe a task or goal…" />
+    <select id="priority-sel">
+      <option value="low">Low</option>
+      <option value="med" selected>Medium</option>
+      <option value="high">High</option>
+    </select>
+    <button class="add-btn" onclick="addTask()"><i class="ti ti-plus"></i> Add</button>
+  </div>
 
-    function save() { localStorage.setItem('todos_v1', JSON.stringify(tasks)); }
+  <div class="ai-action-row">
+    <button class="ai-btn" onclick="aiRephrase()"><i class="ti ti-wand"></i> Smart Rephrase</button>
+    <button class="ai-btn" onclick="aiPriority()"><i class="ti ti-bolt"></i> Suggest Priority</button>
+    <button class="ai-btn" onclick="aiBreakdown()"><i class="ti ti-list-details"></i> Break into Subtasks</button>
+  </div>
 
-    function setFilter(f) {
-      filter = f;
-      ['all','active','done'].forEach(x =>
-        document.getElementById('f-'+x).classList.toggle('active', x === f));
-      render();
-    }
+  <div id="ai-preview-area"></div>
 
-    function addTask() {
-      const input = document.getElementById('task-input');
-      const text  = input.value.trim();
-      if (!text) return;
-      const priority = document.getElementById('priority-sel').value;
-      tasks.unshift({ id: nextId++, text, done: false, priority });
-      input.value = '';
-      save(); render();
-    }
+  <div class="filters">
+    <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">All</button>
+    <button class="filter-btn"        id="f-active" onclick="setFilter('active')">Active</button>
+    <button class="filter-btn"        id="f-done"   onclick="setFilter('done')">Done</button>
+  </div>
 
-    function toggle(id) {
-      const t = tasks.find(t => t.id === id);
-      if (t) { t.done = !t.done; save(); render(); }
-    }
+  <div class="task-list" id="task-list"></div>
+  <div class="stats"     id="stats"></div>
+</div>
 
-    function del(id) {
-      tasks = tasks.filter(t => t.id !== id);
-      save(); render();
-    }
+<script>
+  let tasks = JSON.parse(localStorage.getItem('todos_v1') || 'null') || [
+    { id: 1, text: 'Review project requirements',    done: false, priority: 'high' },
+    { id: 2, text: 'Set up development environment', done: true,  priority: 'med'  },
+    { id: 3, text: 'Write unit tests',               done: false, priority: 'med'  },
+    { id: 4, text: 'Update documentation',           done: false, priority: 'low'  },
+  ];
+  let filter = 'all';
+  let nextId = tasks.reduce((m, t) => Math.max(m, t.id), 0) + 1;
 
-    document.getElementById('task-input')
-      .addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+  const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const d = new Date();
+  document.getElementById('date-label').textContent = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
 
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
+  // ── API Key ───────────────────────────────────────────────────────────────
+  let apiKey = localStorage.getItem('anthropic_key') || '';
+  function saveApiKey() {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val) return;
+    apiKey = val;
+    localStorage.setItem('anthropic_key', apiKey);
+    document.getElementById('api-banner').innerHTML = `
+      <i class="ti ti-robot" style="color:var(--ai-text);font-size:20px"></i>
+      <span class="api-saved"><i class="ti ti-circle-check"></i>&nbsp;API key saved — AI features are active!</span>
+      <button class="cancel-btn" style="margin-left:auto;font-size:12px" onclick="clearKey()">Change key</button>`;
+  }
+  function clearKey() { apiKey=''; localStorage.removeItem('anthropic_key'); location.reload(); }
+  if (apiKey) { document.getElementById('api-key-input').value = apiKey; saveApiKey(); }
 
-    function render() {
-      const visible = tasks.filter(t =>
-        filter === 'all' ? true : filter === 'active' ? !t.done : t.done);
-
-      const list = document.getElementById('task-list');
-      if (!visible.length) {
-        list.innerHTML = `<div class="empty">
-          <i class="ti ti-inbox"></i>
-          ${filter === 'done'   ? 'No completed tasks yet.'
-          : filter === 'active' ? 'All tasks are done! 🎉'
-          : 'No tasks yet — add one above.'}
-        </div>`;
-      } else {
-        list.innerHTML = visible.map(t => `
-          <div class="task-item${t.done ? ' done' : ''}">
-            <button class="check-btn${t.done ? ' checked' : ''}"
-                    onclick="toggle(${t.id})"
-                    aria-label="${t.done ? 'Mark incomplete' : 'Mark complete'}">
-              ${t.done ? '<i class="ti ti-check"></i>' : ''}
-            </button>
-            <span class="task-text${t.done ? ' done-text' : ''}">${escHtml(t.text)}</span>
-            <span class="priority-badge p-${t.priority}">
-              ${t.priority === 'high' ? 'High' : t.priority === 'med' ? 'Medium' : 'Low'}
-            </span>
-            <button class="del-btn" onclick="del(${t.id})" aria-label="Delete task">
-              <i class="ti ti-trash"></i>
-            </button>
-          </div>`).join('');
-      }
-
-      const total  = tasks.length;
-      const done   = tasks.filter(t => t.done).length;
-      const active = total - done;
-      document.getElementById('stats').innerHTML = `
-        <div class="stat"><div class="stat-val">${total}</div><div class="stat-label">Total</div></div>
-        <div class="stat"><div class="stat-val">${active}</div><div class="stat-label">Active</div></div>
-        <div class="stat"><div class="stat-val">${done}</div><div class="stat-label">Done</div></div>
-        <div class="stat"><div class="stat-val">${total ? Math.round(done/total*100) : 0}%</div><div class="stat-label">Complete</div></div>`;
-    }
-
+  // ── Core ──────────────────────────────────────────────────────────────────
+  function save() { localStorage.setItem('todos_v1', JSON.stringify(tasks)); }
+  function setFilter(f) {
+    filter = f;
+    ['all','active','done'].forEach(x => document.getElementById('f-'+x).classList.toggle('active', x===f));
     render();
-  </script>
+  }
+  function addTask(text, priority) {
+    const inp = document.getElementById('task-input');
+    text = text !== undefined ? text : inp.value.trim();
+    if (!text) return;
+    priority = priority || document.getElementById('priority-sel').value;
+    tasks.unshift({ id: nextId++, text, done: false, priority });
+    if (text === inp.value.trim()) inp.value = '';
+    save(); render();
+  }
+  function toggle(id) { const t=tasks.find(t=>t.id===id); if(t){t.done=!t.done;save();render();} }
+  function del(id) { tasks=tasks.filter(t=>t.id!==id); save(); render(); }
+  document.getElementById('task-input').addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  let toastEl = null;
+  function showToast(msg, loading=false) {
+    if(toastEl) toastEl.remove();
+    toastEl = document.createElement('div');
+    toastEl.className = 'toast';
+    toastEl.innerHTML = (loading?'<div class="spinner"></div>':'')+msg;
+    document.body.appendChild(toastEl);
+    if(!loading) setTimeout(()=>{ if(toastEl){toastEl.remove();toastEl=null;} }, 3200);
+  }
+  function hideToast() { if(toastEl){toastEl.remove();toastEl=null;} }
+
+  // ── Claude API ────────────────────────────────────────────────────────────
+  async function callClaude(system, user) {
+    if (!apiKey) { showToast('⚠️ Please save your Anthropic API key first.'); return null; }
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600, system, messages:[{role:'user',content:user}] })
+      });
+      if (!res.ok) { const e=await res.json().catch(()=>({})); showToast('❌ '+(e.error?.message||'API error. Check your key.')); return null; }
+      const data = await res.json();
+      return data.content.map(b=>b.text||'').join('');
+    } catch(e) { showToast('❌ Network error. Check your connection.'); return null; }
+  }
+
+  function getInput() { return document.getElementById('task-input').value.trim(); }
+  function requireInput() { const t=getInput(); if(!t) showToast('✏️ Type a task first.'); return t||null; }
+
+  // ── 1. Smart Rephrase ─────────────────────────────────────────────────────
+  async function aiRephrase() {
+    const text = requireInput(); if (!text) return;
+    showToast('Rephrasing your task…', true);
+    const result = await callClaude(
+      'You are a productivity assistant. Rephrase the given task as a clear, concise, actionable to-do item starting with an action verb. Return ONLY the rephrased task — no quotes, no explanation.',
+      text
+    );
+    hideToast();
+    if (!result) return;
+    const rephrased = result.trim().replace(/^["']|["']$/g, '');
+    showPreview('rephrase', [{ text: rephrased, priority: document.getElementById('priority-sel').value }], text);
+  }
+
+  // ── 2. Suggest Priority ───────────────────────────────────────────────────
+  async function aiPriority() {
+    const text = requireInput(); if (!text) return;
+    showToast('Analysing priority…', true);
+    const result = await callClaude(
+      'You are a productivity assistant. Based on the task, suggest a priority. Reply with ONLY one word: high, med, or low.',
+      text
+    );
+    hideToast();
+    if (!result) return;
+    const raw = result.trim().toLowerCase().replace(/[^a-z]/g,'');
+    const priority = ['high','med','low'].includes(raw) ? raw : 'med';
+    document.getElementById('priority-sel').value = priority;
+    const label = priority==='high'?'High':priority==='med'?'Medium':'Low';
+    showToast(`🤖 AI suggests: <strong>${label}</strong> priority — applied!`);
+  }
+
+  // ── 3. Break into Subtasks ────────────────────────────────────────────────
+  async function aiBreakdown() {
+    const text = requireInput(); if (!text) return;
+    showToast('Breaking into subtasks…', true);
+    const result = await callClaude(
+      'You are a productivity assistant. Break the given goal into 3–6 clear, actionable subtasks.\nReturn ONLY a JSON array like: [{"text":"subtask","priority":"high|med|low"}]\nNo extra text, no markdown fences.',
+      text
+    );
+    hideToast();
+    if (!result) return;
+    let subtasks;
+    try { subtasks = JSON.parse(result.trim().replace(/```json|```/g,'')); }
+    catch(e) { showToast('❌ Could not parse AI response. Try again.'); return; }
+    document.getElementById('task-input').value = '';
+    showPreview('breakdown', subtasks, text);
+  }
+
+  // ── AI Preview ────────────────────────────────────────────────────────────
+  let previewItems = [];
+  function showPreview(type, items, original) {
+    previewItems = items;
+    const isBreak = type === 'breakdown';
+    const area = document.getElementById('ai-preview-area');
+    const title = isBreak
+      ? `<i class="ti ti-list-details"></i> ${items.length} subtasks for: <em>${escHtml(original)}</em>`
+      : `<i class="ti ti-wand"></i> AI rephrased your task:`;
+    const rows = items.map((item, i) => `
+      <div class="ai-preview-item">
+        ${isBreak ? `<input type="checkbox" id="ai-cb-${i}" checked>` : ''}
+        <label for="ai-cb-${i}">${escHtml(item.text)}</label>
+        <span class="badge p-${item.priority}">${item.priority==='high'?'High':item.priority==='med'?'Medium':'Low'}</span>
+      </div>`).join('');
+    area.innerHTML = `
+      <div class="ai-preview">
+        <div class="ai-preview-title">${title}</div>
+        ${rows}
+        <div class="ai-preview-actions">
+          <button class="confirm-btn" onclick="confirmPreview('${type}')">
+            <i class="ti ti-circle-check"></i> ${isBreak?'Add selected':'Use this'}
+          </button>
+          <button class="cancel-btn" onclick="cancelPreview()">Dismiss</button>
+        </div>
+      </div>`;
+  }
+  function confirmPreview(type) {
+    if (type === 'breakdown') {
+      previewItems.forEach((item, i) => {
+        const cb = document.getElementById('ai-cb-'+i);
+        if (cb && cb.checked) addTask(item.text, item.priority);
+      });
+    } else {
+      document.getElementById('task-input').value = previewItems[0].text;
+    }
+    cancelPreview();
+  }
+  function cancelPreview() { document.getElementById('ai-preview-area').innerHTML = ''; previewItems = []; }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function render() {
+    const visible = tasks.filter(t => filter==='all'?true:filter==='active'?!t.done:t.done);
+    const list = document.getElementById('task-list');
+    list.innerHTML = !visible.length
+      ? `<div class="empty"><i class="ti ti-inbox"></i>${filter==='done'?'No completed tasks yet.':filter==='active'?'All tasks done! 🎉':'No tasks yet — add one above.'}</div>`
+      : visible.map(t=>`
+          <div class="task-item${t.done?' done':''}">
+            <button class="check-btn${t.done?' checked':''}" onclick="toggle(${t.id})" aria-label="${t.done?'Mark incomplete':'Mark complete'}">
+              ${t.done?'<i class="ti ti-check"></i>':''}
+            </button>
+            <span class="task-text${t.done?' done-text':''}">${escHtml(t.text)}</span>
+            <span class="priority-badge p-${t.priority}">${t.priority==='high'?'High':t.priority==='med'?'Medium':'Low'}</span>
+            <button class="del-btn" onclick="del(${t.id})" aria-label="Delete"><i class="ti ti-trash"></i></button>
+          </div>`).join('');
+    const total=tasks.length, done=tasks.filter(t=>t.done).length, active=total-done;
+    document.getElementById('stats').innerHTML = `
+      <div class="stat"><div class="stat-val">${total}</div><div class="stat-label">Total</div></div>
+      <div class="stat"><div class="stat-val">${active}</div><div class="stat-label">Active</div></div>
+      <div class="stat"><div class="stat-val">${done}</div><div class="stat-label">Done</div></div>
+      <div class="stat"><div class="stat-val">${total?Math.round(done/total*100):0}%</div><div class="stat-label">Complete</div></div>`;
+  }
+  render();
+</script>
 </body>
 </html>
