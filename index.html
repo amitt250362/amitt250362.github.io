@@ -272,7 +272,10 @@
     const text = requireInput(); if (!text) return;
     showToast('Rephrasing your task…', true);
     const result = await callGemini(
-      `You are a productivity assistant. Rephrase the following task as a clear, concise, actionable to-do item starting with an action verb.\nReturn ONLY the rephrased task — no quotes, no explanation, no extra text.\n\nTask: ${text}`
+      `You are a productivity assistant. Rephrase the following task as a clear, concise, actionable to-do item starting with an action verb.\nReturn ONLY the rephrased task — no quotes, no explanation, no extra text. 
+       Use this example as a guide:
+       Input: "emails" → Output: "Respond to all pending emails in inbox"
+      \n\nTask: ${text}`
     );
     hideToast();
     if (!result) return;
