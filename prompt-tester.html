@@ -8,454 +8,149 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg:        #0a0a0f;
-      --surface:   #111118;
-      --surface2:  #1a1a24;
-      --surface3:  #22222f;
-      --border:    rgba(255,255,255,0.07);
-      --border2:   rgba(255,255,255,0.13);
-      --text:      #e8e6f0;
-      --text2:     #8a87a0;
-      --text3:     #4a4860;
-      --accent:    #7c6aff;
-      --accent2:   #a855f7;
-      --green:     #22d3a5;
-      --red:       #ff5f7e;
-      --yellow:    #fbbf24;
-      --mono:      'JetBrains Mono', monospace;
-      --sans:      'Syne', sans-serif;
-      --radius:    10px;
-      --radius-lg: 16px;
+      --bg:#0a0a0f; --surface:#111118; --surface2:#1a1a24; --surface3:#22222f;
+      --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+      --text:#e8e6f0; --text2:#8a87a0; --text3:#4a4860;
+      --accent:#7c6aff; --accent2:#a855f7;
+      --green:#22d3a5; --red:#ff5f7e; --yellow:#fbbf24;
+      --mono:'JetBrains Mono',monospace; --sans:'Syne',sans-serif;
+      --radius:10px; --radius-lg:16px;
+      /* provider colors */
+      --gemini:#4285f4; --groq:#f55036; --openrouter:#6467f2; --mistral:#ff7000; --cloudflare:#f48120;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Grid background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .layout { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,106,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+    .layout{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 1.5rem 4rem;}
 
     /* Header */
-    header {
-      padding: 2rem 0 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 2rem;
-    }
-    .logo { display: flex; align-items: center; gap: 12px; }
-    .logo-icon {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-    .logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-    .logo-text span { color: var(--accent); }
-    .tagline { font-size: 12px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
-    .header-right { display: flex; align-items: center; gap: 10px; }
+    header{padding:2rem 0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:2rem;}
+    .logo{display:flex;align-items:center;gap:12px;}
+    .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .logo-text{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+    .logo-text span{color:var(--accent);}
+    .tagline{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px;}
+    .run-count-badge{font-size:11px;font-family:var(--mono);color:var(--text3);background:var(--surface);border:1px solid var(--border2);padding:4px 12px;border-radius:20px;}
+    .run-count-badge span{color:var(--accent);}
 
-    /* API key area */
-    .api-row {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 6px 6px 6px 12px;
-    }
-    .api-label { font-size: 11px; font-family: var(--mono); color: var(--text3); white-space: nowrap; }
-    .api-row input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 12px;
-      width: 180px;
-    }
-    .api-row input::placeholder { color: var(--text3); }
-    .btn-save {
-      height: 28px; padding: 0 12px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--sans);
-      white-space: nowrap;
-      transition: opacity 0.15s;
-    }
-    .btn-save:hover { opacity: 0.85; }
-    .key-saved {
-      font-size: 11px; font-family: var(--mono);
-      color: var(--green);
-      display: flex; align-items: center; gap: 5px;
-    }
+    /* Keys panel */
+    .keys-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:1.5rem;}
+    .keys-title{font-size:11px;font-family:var(--mono);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+    .keys-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+    .key-item{display:flex;flex-direction:column;gap:5px;}
+    .key-item label{font-size:11px;font-family:var(--mono);display:flex;align-items:center;gap:6px;}
+    .provider-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .dot-gemini{background:var(--gemini);}
+    .dot-groq{background:var(--groq);}
+    .dot-openrouter{background:var(--openrouter);}
+    .dot-mistral{background:var(--mistral);}
+    .key-row{display:flex;gap:5px;}
+    .key-input{flex:1;height:30px;padding:0 8px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;}
+    .key-input::placeholder{color:var(--text3);}
+    .key-input.saved{border-color:var(--green);color:var(--green);}
+    .save-key-btn{height:30px;padding:0 10px;background:var(--surface3);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-size:11px;font-family:var(--mono);cursor:pointer;white-space:nowrap;transition:all 0.12s;}
+    .save-key-btn:hover{color:var(--text);border-color:var(--border2);}
+    .save-key-btn.active{background:rgba(34,211,165,0.1);border-color:var(--green);color:var(--green);}
 
-    /* Sections */
-    .section-label {
-      font-size: 10px;
-      font-family: var(--mono);
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 10px;
-    }
+    /* Section label */
+    .section-label{font-size:10px;font-family:var(--mono);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 
-    /* Main grid */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 720px) { .main-grid { grid-template-columns: 1fr; } }
+    /* Side panels */
+    .sides-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    @media(max-width:720px){.sides-grid{grid-template-columns:1fr;}}
+    .side-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .side-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .side-label{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+    .badge{font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:20px;background:var(--surface3);color:var(--text2);border:1px solid var(--border2);}
+    .badge.a{background:rgba(124,106,255,0.15);color:var(--accent);border-color:rgba(124,106,255,0.3);}
+    .badge.b{background:rgba(168,85,247,0.15);color:var(--accent2);border-color:rgba(168,85,247,0.3);}
+    .side-selects{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+    select{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:11px;padding:4px 8px;outline:none;cursor:pointer;height:28px;}
+    .side-body{padding:14px 16px;}
+    textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.6;padding:12px;resize:vertical;outline:none;transition:border-color 0.15s;min-height:110px;}
+    textarea::placeholder{color:var(--text3);}
+    textarea:focus{border-color:var(--accent);}
 
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    .panel-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .panel-title {
-      font-size: 13px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .badge {
-      font-size: 10px;
-      font-family: var(--mono);
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: var(--surface3);
-      color: var(--text2);
-      border: 1px solid var(--border2);
-    }
-    .badge.a { background: rgba(124,106,255,0.15); color: var(--accent); border-color: rgba(124,106,255,0.3); }
-    .badge.b { background: rgba(168,85,247,0.15); color: var(--accent2); border-color: rgba(168,85,247,0.3); }
+    /* User input */
+    .user-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+    .user-panel .field{flex:1;min-width:200px;}
+    .field-label{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:6px;display:block;}
+    .user-panel textarea{min-height:56px;}
+    .run-col{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+    .btn-run{height:42px;padding:0 28px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;gap:8px;letter-spacing:0.3px;transition:opacity 0.15s,transform 0.1s;white-space:nowrap;}
+    .btn-run:hover{opacity:0.9;}
+    .btn-run:active{transform:scale(0.98);}
+    .btn-run:disabled{opacity:0.4;cursor:not-allowed;}
+    .hint{font-size:10px;font-family:var(--mono);color:var(--text3);}
+    .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
 
-    .panel-body { padding: 14px 16px; }
+    /* Settings */
+    .settings-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .setting{display:flex;align-items:center;gap:7px;}
+    .setting label{font-size:11px;font-family:var(--mono);color:var(--text2);white-space:nowrap;}
+    .setting input[type="range"]{padding:0;width:90px;accent-color:var(--accent);}
+    .setting .val{font-size:11px;font-family:var(--mono);color:var(--accent);min-width:24px;}
 
-    /* Textarea */
-    textarea {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.6;
-      padding: 12px;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.15s;
-      min-height: 120px;
-    }
-    textarea::placeholder { color: var(--text3); }
-    textarea:focus { border-color: var(--accent); }
-    .field-label { font-size: 11px; font-family: var(--mono); color: var(--text3); margin-bottom: 6px; display: block; }
-
-    /* User input panel (full width) */
-    .user-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 16px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-    .user-panel .field { flex: 1; min-width: 200px; }
-    .user-panel textarea { min-height: 60px; }
-
-    /* Settings row */
-    .settings-row {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .setting { display: flex; align-items: center; gap: 8px; }
-    .setting label { font-size: 12px; font-family: var(--mono); color: var(--text2); white-space: nowrap; }
-    .setting select, .setting input[type="range"] {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 6px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 12px;
-      padding: 4px 8px;
-      outline: none;
-      cursor: pointer;
-    }
-    .setting input[type="range"] { padding: 0; width: 100px; accent-color: var(--accent); }
-    .setting .val { font-size: 12px; font-family: var(--mono); color: var(--accent); min-width: 28px; }
-    .settings-row .spacer { flex: 1; }
-
-    /* Run button */
-    .btn-run {
-      height: 42px;
-      padding: 0 28px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 700;
-      font-family: var(--sans);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      letter-spacing: 0.3px;
-      transition: opacity 0.15s, transform 0.1s;
-      white-space: nowrap;
-    }
-    .btn-run:hover { opacity: 0.9; }
-    .btn-run:active { transform: scale(0.98); }
-    .btn-run:disabled { opacity: 0.4; cursor: not-allowed; }
-    .spinner {
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Winner */
+    .winner-banner{background:linear-gradient(135deg,rgba(34,211,165,0.1),rgba(124,106,255,0.1));border:1px solid rgba(34,211,165,0.25);border-radius:var(--radius-lg);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:14px;animation:fadeIn 0.3s ease;}
+    .winner-icon{font-size:22px;}
+    .winner-text strong{color:var(--green);}
 
     /* Results */
-    .results-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 720px) { .results-grid { grid-template-columns: 1fr; } }
-
-    .result-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      animation: fadeIn 0.25s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-    .result-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .result-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .meta-chip {
-      font-size: 10px;
-      font-family: var(--mono);
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: var(--surface3);
-      color: var(--text2);
-    }
-    .meta-chip.time { color: var(--yellow); }
-    .meta-chip.tokens { color: var(--green); }
-
-    .result-body {
-      padding: 16px;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
-      min-height: 100px;
-    }
-    .result-body.empty { color: var(--text3); font-style: italic; }
-    .result-body.loading { color: var(--text3); display: flex; align-items: center; gap: 10px; }
-
-    .result-footer {
-      padding: 10px 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .rate-label { font-size: 11px; font-family: var(--mono); color: var(--text3); }
-    .stars { display: flex; gap: 3px; }
-    .star {
-      font-size: 16px;
-      cursor: pointer;
-      color: var(--text3);
-      transition: color 0.1s, transform 0.1s;
-      line-height: 1;
-    }
-    .star:hover, .star.active { color: var(--yellow); transform: scale(1.2); }
-    .copy-btn {
-      margin-left: auto;
-      height: 26px;
-      padding: 0 10px;
-      background: var(--surface3);
-      border: 1px solid var(--border2);
-      border-radius: 6px;
-      color: var(--text2);
-      font-size: 11px;
-      font-family: var(--mono);
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-    .copy-btn:hover { background: var(--surface2); color: var(--text); }
-
-    /* Winner banner */
-    .winner-banner {
-      background: linear-gradient(135deg, rgba(34,211,165,0.1), rgba(124,106,255,0.1));
-      border: 1px solid rgba(34,211,165,0.25);
-      border-radius: var(--radius-lg);
-      padding: 14px 20px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
-      animation: fadeIn 0.3s ease;
-    }
-    .winner-icon { font-size: 22px; }
-    .winner-text { flex: 1; }
-    .winner-text strong { color: var(--green); }
+    .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    @media(max-width:720px){.results-grid{grid-template-columns:1fr;}}
+    .result-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;animation:fadeIn 0.25s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+    .result-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+    .result-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+    .meta-chip{font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:20px;background:var(--surface3);color:var(--text2);}
+    .meta-chip.time{color:var(--yellow);}
+    .meta-chip.tokens{color:var(--green);}
+    .provider-chip{font-size:10px;font-family:var(--mono);padding:2px 10px;border-radius:20px;font-weight:600;}
+    .result-body{padding:16px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;min-height:100px;}
+    .result-body.empty{color:var(--text3);font-style:italic;}
+    .result-body.loading{color:var(--text3);display:flex;align-items:center;gap:10px;}
+    .result-body.error{color:var(--red);}
+    .result-footer{padding:10px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+    .rate-label{font-size:11px;font-family:var(--mono);color:var(--text3);}
+    .stars{display:flex;gap:3px;}
+    .star{font-size:16px;cursor:pointer;color:var(--text3);transition:color 0.1s,transform 0.1s;line-height:1;}
+    .star:hover,.star.active{color:var(--yellow);transform:scale(1.2);}
+    .copy-btn{margin-left:auto;height:26px;padding:0 10px;background:var(--surface3);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all 0.12s;}
+    .copy-btn:hover{background:var(--surface2);color:var(--text);}
 
     /* History */
-    .history-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    .history-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .history-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .clear-btn {
-      height: 26px; padding: 0 10px;
-      background: transparent;
-      border: 1px solid var(--border2);
-      border-radius: 6px;
-      color: var(--text3);
-      font-size: 11px;
-      font-family: var(--mono);
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-    .clear-btn:hover { color: var(--red); border-color: var(--red); }
-
-    .history-list { max-height: 340px; overflow-y: auto; }
-    .history-list::-webkit-scrollbar { width: 4px; }
-    .history-list::-webkit-scrollbar-track { background: transparent; }
-    .history-list::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
-
-    .history-item {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      transition: background 0.12s;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .history-item:last-child { border-bottom: none; }
-    .history-item:hover { background: var(--surface2); }
-    .history-item-prompt {
-      font-size: 12px;
-      font-family: var(--mono);
-      color: var(--text2);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .history-item-prompt strong { color: var(--text); font-weight: 500; }
-    .history-item-meta {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 6px;
-    }
-    .history-empty {
-      padding: 2.5rem;
-      text-align: center;
-      font-size: 13px;
-      font-family: var(--mono);
-      color: var(--text3);
-    }
+    .history-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;}
+    .history-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .history-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+    .clear-btn{height:26px;padding:0 10px;background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--text3);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all 0.12s;}
+    .clear-btn:hover{color:var(--red);border-color:var(--red);}
+    .history-list{max-height:300px;overflow-y:auto;}
+    .history-list::-webkit-scrollbar{width:4px;}
+    .history-list::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px;}
+    .history-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.12s;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;}
+    .history-item:last-child{border-bottom:none;}
+    .history-item:hover{background:var(--surface2);}
+    .history-item-main{display:flex;flex-direction:column;gap:3px;}
+    .history-item-prompt{font-size:12px;font-family:var(--mono);color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .history-item-prompt strong{color:var(--text);}
+    .history-item-models{font-size:10px;font-family:var(--mono);color:var(--text3);}
+    .history-item-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+    .history-empty{padding:2rem;text-align:center;font-size:13px;font-family:var(--mono);color:var(--text3);}
 
     /* Tips */
-    .tips-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin-top: 16px;
-    }
-    .tip-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .tip-card:hover { border-color: var(--accent); background: var(--surface2); }
-    .tip-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
-    .tip-desc { font-size: 12px; font-family: var(--mono); color: var(--text2); line-height: 1.5; }
+    .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:12px;}
+    .tip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+    .tip-card:hover{border-color:var(--accent);background:var(--surface2);}
+    .tip-title{font-size:12px;font-weight:700;margin-bottom:5px;color:var(--accent);}
+    .tip-desc{font-size:11px;font-family:var(--mono);color:var(--text2);line-height:1.5;}
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+    /* Provider colors */
+    .pc-gemini{background:rgba(66,133,244,0.15);color:#7ab4ff;border:1px solid rgba(66,133,244,0.3);}
+    .pc-groq{background:rgba(245,80,54,0.15);color:#ff8a76;border:1px solid rgba(245,80,54,0.3);}
+    .pc-openrouter{background:rgba(100,103,242,0.15);color:#a5a7ff;border:1px solid rgba(100,103,242,0.3);}
+    .pc-mistral{background:rgba(255,112,0,0.15);color:#ffaa55;border:1px solid rgba(255,112,0,0.3);}
   </style>
 </head>
 <body>
@@ -466,66 +161,108 @@
     <div class="logo">
       <div class="logo-icon">⚗️</div>
       <div>
-        <div class="logo-text">Prompt <span>Lab</span></div>
-        <div class="tagline">// compare · iterate · improve</div>
+        <div class="logo-text">Prompt <span>Lab</span> <span style="font-size:13px;color:var(--text3);font-weight:400">v2</span></div>
+        <div class="tagline">// compare prompts · compare models · compare providers</div>
       </div>
     </div>
-    <div class="header-right">
-      <div class="api-row" id="api-row">
-        <span class="api-label">GEMINI KEY</span>
-        <input type="password" id="api-input" placeholder="AIza..." />
-        <button class="btn-save" onclick="saveKey()">Connect</button>
-      </div>
-    </div>
+    <div class="run-count-badge">total runs: <span id="run-count">0</span></div>
   </header>
 
-  <!-- Prompt panels A & B -->
-  <div class="section-label">System Prompts — Define how the AI should behave</div>
-  <div class="main-grid">
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">⬡ Prompt <span class="badge a">A</span></div>
-        <button class="clear-btn" onclick="clearPrompt('a')">Clear</button>
+  <!-- API Keys -->
+  <div class="keys-panel">
+    <div class="keys-title">🔑 API Keys — saved in your browser only</div>
+    <div class="keys-grid">
+      <div class="key-item">
+        <label><span class="provider-dot dot-gemini"></span>Google Gemini <span style="color:var(--green);font-size:10px">(recommended)</span></label>
+        <div class="key-row">
+          <input class="key-input" type="password" id="key-gemini" placeholder="AIza..." oninput="markDirty('gemini')"/>
+          <button class="save-key-btn" id="btn-gemini" onclick="saveKey('gemini')">Save</button>
+        </div>
       </div>
-      <div class="panel-body">
-        <textarea id="system-a" rows="6" placeholder="e.g. You are a productivity assistant. Rephrase the given task as a clear, concise to-do item starting with an action verb. Return only the rephrased task."></textarea>
+      <div class="key-item">
+        <label><span class="provider-dot dot-groq"></span>Groq <span style="color:var(--text3);font-size:10px">console.groq.com</span></label>
+        <div class="key-row">
+          <input class="key-input" type="password" id="key-groq" placeholder="gsk_..." oninput="markDirty('groq')"/>
+          <button class="save-key-btn" id="btn-groq" onclick="saveKey('groq')">Save</button>
+        </div>
       </div>
-    </div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">⬡ Prompt <span class="badge b">B</span></div>
-        <button class="clear-btn" onclick="clearPrompt('b')">Clear</button>
+      <div class="key-item">
+        <label><span class="provider-dot dot-openrouter"></span>OpenRouter <span style="color:var(--text3);font-size:10px">openrouter.ai</span></label>
+        <div class="key-row">
+          <input class="key-input" type="password" id="key-openrouter" placeholder="sk-or-..." oninput="markDirty('openrouter')"/>
+          <button class="save-key-btn" id="btn-openrouter" onclick="saveKey('openrouter')">Save</button>
+        </div>
       </div>
-      <div class="panel-body">
-        <textarea id="system-b" rows="6" placeholder="e.g. You are a productivity assistant. Rephrase the task as a clear, actionable to-do item starting with a verb, under 10 words. Use this example: 'emails' → 'Clear and respond to all inbox emails'. Return only the rephrased task."></textarea>
+      <div class="key-item">
+        <label><span class="provider-dot dot-mistral"></span>Mistral <span style="color:var(--text3);font-size:10px">console.mistral.ai</span></label>
+        <div class="key-row">
+          <input class="key-input" type="password" id="key-mistral" placeholder="..." oninput="markDirty('mistral')"/>
+          <button class="save-key-btn" id="btn-mistral" onclick="saveKey('mistral')">Save</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- User input -->
-  <div class="user-panel">
-    <div class="field" style="flex:2">
-      <span class="field-label">USER INPUT — The message sent to both prompts</span>
-      <textarea id="user-input" rows="2" placeholder="e.g. fix the login bug on the dashboard"></textarea>
+  <!-- Side A & B -->
+  <div class="section-label">Configure each side — mix providers and prompts freely</div>
+  <div class="sides-grid">
+
+    <div class="side-panel">
+      <div class="side-header">
+        <div class="side-label">Side <span class="badge a">A</span></div>
+        <div class="side-selects">
+          <select id="provider-a" onchange="updateModels('a')">
+            <option value="gemini">Gemini</option>
+            <option value="groq">Groq</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="mistral">Mistral</option>
+          </select>
+          <select id="model-a"></select>
+          <button class="clear-btn" onclick="document.getElementById('sys-a').value=''">Clear</button>
+        </div>
+      </div>
+      <div class="side-body">
+        <span class="field-label">System Prompt A</span>
+        <textarea id="sys-a" rows="5" placeholder="e.g. You are a helpful assistant. Answer clearly and concisely."></textarea>
+      </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-      <button class="btn-run" id="run-btn" onclick="runTest()">
-        ▶ Run Test
-      </button>
-      <span style="font-size:10px;font-family:var(--mono);color:var(--text3)">Enter to run</span>
+
+    <div class="side-panel">
+      <div class="side-header">
+        <div class="side-label">Side <span class="badge b">B</span></div>
+        <div class="side-selects">
+          <select id="provider-b" onchange="updateModels('b')">
+            <option value="gemini">Gemini</option>
+            <option value="groq">Groq</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="mistral">Mistral</option>
+          </select>
+          <select id="model-b"></select>
+          <button class="clear-btn" onclick="document.getElementById('sys-b').value=''">Clear</button>
+        </div>
+      </div>
+      <div class="side-body">
+        <span class="field-label">System Prompt B</span>
+        <textarea id="sys-b" rows="5" placeholder="e.g. You are a productivity expert. Be specific, use bullet points where helpful."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- User input + run -->
+  <div class="user-panel">
+    <div class="field">
+      <span class="field-label">User Input — sent to both sides</span>
+      <textarea id="user-input" rows="2" placeholder="e.g. What are 3 ways to stay focused while working from home?"></textarea>
+    </div>
+    <div class="run-col">
+      <button class="btn-run" id="run-btn" onclick="runTest()">▶ Run Test</button>
+      <span class="hint">Enter ↵ or Ctrl+Enter</span>
     </div>
   </div>
 
   <!-- Settings -->
   <div class="settings-row">
-    <div class="setting">
-      <label>MODEL</label>
-      <select id="model-sel">
-        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-        <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-        <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-      </select>
-    </div>
     <div class="setting">
       <label>TEMPERATURE</label>
       <input type="range" id="temp" min="0" max="1" step="0.1" value="0.7" oninput="document.getElementById('temp-val').textContent=this.value"/>
@@ -540,34 +277,23 @@
         <option value="2048">2048</option>
       </select>
     </div>
-    <div class="spacer"></div>
-    <div style="font-size:11px;font-family:var(--mono);color:var(--text3)">
-      runs: <span id="run-count" style="color:var(--accent)">0</span>
+    <div style="margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--text3)">
+      💡 Mix providers: run Gemini vs Groq on the same prompt!
     </div>
   </div>
 
-  <!-- Winner banner -->
+  <!-- Winner -->
   <div id="winner-area"></div>
 
   <!-- Results -->
   <div class="section-label">Results</div>
   <div class="results-grid" id="results-grid">
     <div class="result-panel">
-      <div class="result-header">
-        <div class="result-meta">
-          <span class="badge a">A</span>
-          <span class="meta-chip">waiting...</span>
-        </div>
-      </div>
+      <div class="result-header"><div class="result-meta"><span class="badge a">A</span><span class="meta-chip">waiting…</span></div></div>
       <div class="result-body empty">Run a test to see output here.</div>
     </div>
     <div class="result-panel">
-      <div class="result-header">
-        <div class="result-meta">
-          <span class="badge b">B</span>
-          <span class="meta-chip">waiting...</span>
-        </div>
-      </div>
+      <div class="result-header"><div class="result-meta"><span class="badge b">B</span><span class="meta-chip">waiting…</span></div></div>
       <div class="result-body empty">Run a test to see output here.</div>
     </div>
   </div>
@@ -575,349 +301,368 @@
   <!-- History -->
   <div class="history-panel">
     <div class="history-header">
-      <div class="history-title">📋 Test History <span class="badge" id="history-count">0 runs</span></div>
+      <div class="history-title">📋 History <span class="badge" id="history-count">0 runs</span></div>
       <button class="clear-btn" onclick="clearHistory()">Clear all</button>
     </div>
     <div class="history-list" id="history-list">
-      <div class="history-empty">No tests run yet. Results will appear here.</div>
+      <div class="history-empty">No tests yet — run your first comparison above.</div>
     </div>
   </div>
 
   <!-- Tips -->
-  <div class="section-label" style="margin-top:2rem">Quick Experiments — Click to load</div>
+  <div class="section-label">Quick Experiments — click to load</div>
   <div class="tips-grid">
     <div class="tip-card" onclick="loadTip('basic')">
-      <div class="tip-title">🎯 Basic vs Specific</div>
-      <div class="tip-desc">Compare a vague prompt against one with clear instructions and constraints.</div>
+      <div class="tip-title">🎯 Vague vs Specific</div>
+      <div class="tip-desc">Same provider, see how prompt specificity changes output quality.</div>
+    </div>
+    <div class="tip-card" onclick="loadTip('models')">
+      <div class="tip-title">🤖 Gemini vs Groq</div>
+      <div class="tip-desc">Same prompt, different AI providers. Who gives a better answer?</div>
     </div>
     <div class="tip-card" onclick="loadTip('role')">
-      <div class="tip-title">🎭 No Role vs With Role</div>
-      <div class="tip-desc">See how assigning a persona to the AI changes its output style and quality.</div>
+      <div class="tip-title">🎭 No Role vs Expert Role</div>
+      <div class="tip-desc">Adding a persona to the AI dramatically shapes its responses.</div>
     </div>
     <div class="tip-card" onclick="loadTip('examples')">
       <div class="tip-title">📌 Zero-shot vs Few-shot</div>
-      <div class="tip-desc">Compare prompts with and without examples to see the consistency difference.</div>
+      <div class="tip-desc">Examples in the prompt vs no examples — see the consistency jump.</div>
     </div>
     <div class="tip-card" onclick="loadTip('format')">
-      <div class="tip-title">📐 Unstructured vs Formatted</div>
-      <div class="tip-desc">See how telling the AI exactly what format to use improves reliability.</div>
+      <div class="tip-title">📐 Free vs Structured Format</div>
+      <div class="tip-desc">Tell the AI exactly what format to return and watch reliability improve.</div>
     </div>
-    <div class="tip-card" onclick="loadTip('tone')">
-      <div class="tip-title">🎨 Formal vs Casual Tone</div>
-      <div class="tip-desc">Control how the AI sounds by specifying tone in your system prompt.</div>
-    </div>
-    <div class="tip-card" onclick="loadTip('chain')">
-      <div class="tip-title">🔗 Simple vs Chain-of-Thought</div>
-      <div class="tip-desc">Ask the AI to think step-by-step and compare the reasoning quality.</div>
+    <div class="tip-card" onclick="loadTip('cot')">
+      <div class="tip-title">🔗 Direct vs Chain-of-Thought</div>
+      <div class="tip-desc">Ask the AI to reason step-by-step and compare depth of answers.</div>
     </div>
   </div>
 
 </div>
-
 <script>
-  // ── State ─────────────────────────────────────────────────────────────────
-  let apiKey = localStorage.getItem('gemini_key') || '';
-  let history = JSON.parse(localStorage.getItem('prompt_history') || '[]');
-  let runCount = parseInt(localStorage.getItem('run_count') || '0');
-  let ratings = { a: 0, b: 0 };
-
-  // ── API Key ───────────────────────────────────────────────────────────────
-  function saveKey() {
-    const val = document.getElementById('api-input').value.trim();
-    if (!val) return;
-    apiKey = val;
-    localStorage.setItem('gemini_key', apiKey);
-    document.getElementById('api-row').innerHTML = `
-      <span class="key-saved">✓ Gemini connected</span>
-      <button class="clear-btn" style="margin-left:8px" onclick="resetKey()">Change</button>`;
+// ── Provider configs ────────────────────────────────────────────────────────
+const PROVIDERS = {
+  gemini: {
+    label: 'Gemini',
+    models: ['gemini-2.5-flash','gemini-2.5-pro','gemini-2.0-flash'],
+    call: callGemini
+  },
+  groq: {
+    label: 'Groq',
+    models: ['llama-3.3-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768','gemma2-9b-it'],
+    call: callOpenAICompat('https://api.groq.com/openai/v1/chat/completions', 'groq')
+  },
+  openrouter: {
+    label: 'OpenRouter',
+    models: ['meta-llama/llama-3.3-70b-instruct:free','deepseek/deepseek-r1:free','mistralai/mistral-7b-instruct:free','qwen/qwen3-235b-a22b:free'],
+    call: callOpenAICompat('https://openrouter.ai/api/v1/chat/completions', 'openrouter')
+  },
+  mistral: {
+    label: 'Mistral',
+    models: ['mistral-small-latest','open-mistral-nemo','open-mistral-7b'],
+    call: callOpenAICompat('https://api.mistral.ai/v1/chat/completions', 'mistral')
   }
-  function resetKey() { apiKey=''; localStorage.removeItem('gemini_key'); location.reload(); }
-  if (apiKey) {
-    document.getElementById('api-input').value = apiKey;
-    saveKey();
-  }
+};
 
-  // ── Run count ─────────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────────────────
+let keys = {};
+let history = JSON.parse(localStorage.getItem('pl_history_v2') || '[]');
+let runCount = parseInt(localStorage.getItem('pl_runs_v2') || '0');
+let ratings = { a: 0, b: 0 };
+
+// ── Init keys ──────────────────────────────────────────────────────────────
+['gemini','groq','openrouter','mistral'].forEach(p => {
+  const k = localStorage.getItem('key_'+p) || '';
+  if (k) {
+    keys[p] = k;
+    document.getElementById('key-'+p).value = '••••••••';
+    document.getElementById('key-'+p).classList.add('saved');
+    document.getElementById('btn-'+p).textContent = '✓';
+    document.getElementById('btn-'+p).classList.add('active');
+  }
+});
+
+function saveKey(p) {
+  const inp = document.getElementById('key-'+p);
+  const val = inp.value.trim();
+  if (!val || val === '••••••••') return;
+  keys[p] = val;
+  localStorage.setItem('key_'+p, val);
+  inp.value = '••••••••';
+  inp.classList.add('saved');
+  const btn = document.getElementById('btn-'+p);
+  btn.textContent = '✓';
+  btn.classList.add('active');
+}
+function markDirty(p) {
+  document.getElementById('key-'+p).classList.remove('saved');
+  document.getElementById('btn-'+p).textContent = 'Save';
+  document.getElementById('btn-'+p).classList.remove('active');
+}
+
+// ── Model dropdowns ─────────────────────────────────────────────────────────
+function updateModels(side) {
+  const prov = document.getElementById('provider-'+side).value;
+  const sel = document.getElementById('model-'+side);
+  sel.innerHTML = PROVIDERS[prov].models.map(m =>
+    `<option value="${m}">${m.length > 30 ? m.split('/').pop() : m}</option>`
+  ).join('');
+}
+updateModels('a');
+updateModels('b');
+// Default B to Groq for comparison
+document.getElementById('provider-b').value = 'groq';
+updateModels('b');
+
+document.getElementById('run-count').textContent = runCount;
+
+// ── Keyboard ────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key==='Enter') runTest(); });
+document.getElementById('user-input').addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runTest();} });
+
+// ── API calls ───────────────────────────────────────────────────────────────
+async function callGemini(system, user, model) {
+  if (!keys.gemini) throw new Error('No Gemini API key saved.');
+  const prompt = system ? `[SYSTEM]\n${system}\n\n[USER]\n${user}` : user;
+  const t0 = Date.now();
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keys.gemini}`,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:getTemp(),maxOutputTokens:getMaxTokens()} }) }
+  );
+  const elapsed = Date.now()-t0;
+  if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${res.status}`); }
+  const data = await res.json();
+  return { text: data.candidates?.[0]?.content?.parts?.[0]?.text||'(no response)', elapsed, tokens: data.usageMetadata?.totalTokenCount||'—' };
+}
+
+function callOpenAICompat(url, provider) {
+  return async (system, user, model) => {
+    const k = keys[provider];
+    if (!k) throw new Error(`No ${PROVIDERS[provider].label} API key saved.`);
+    const msgs = [];
+    if (system) msgs.push({ role:'system', content:system });
+    msgs.push({ role:'user', content:user });
+    const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${k}` };
+    if (provider === 'openrouter') {
+      headers['HTTP-Referer'] = 'https://amitt250362.github.io';
+      headers['X-Title'] = 'Prompt Lab';
+    }
+    const t0 = Date.now();
+    const res = await fetch(url, {
+      method:'POST', headers,
+      body: JSON.stringify({ model, messages:msgs, temperature:getTemp(), max_tokens:getMaxTokens() })
+    });
+    const elapsed = Date.now()-t0;
+    if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${res.status}`); }
+    const data = await res.json();
+    return { text: data.choices?.[0]?.message?.content||'(no response)', elapsed, tokens: data.usage?.total_tokens||'—' };
+  };
+}
+
+function getTemp() { return parseFloat(document.getElementById('temp').value); }
+function getMaxTokens() { return parseInt(document.getElementById('max-tokens').value); }
+
+// ── Run test ────────────────────────────────────────────────────────────────
+async function runTest() {
+  const user = document.getElementById('user-input').value.trim();
+  if (!user) { alert('Please enter a user input message.'); return; }
+
+  const provA = document.getElementById('provider-a').value;
+  const provB = document.getElementById('provider-b').value;
+  const modA  = document.getElementById('model-a').value;
+  const modB  = document.getElementById('model-b').value;
+  const sysA  = document.getElementById('sys-a').value.trim();
+  const sysB  = document.getElementById('sys-b').value.trim();
+
+  ratings = { a:0, b:0 };
+  document.getElementById('winner-area').innerHTML = '';
+
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Running…';
+
+  setLoading('a', provA, modA);
+  setLoading('b', provB, modB);
+
+  const [resA, resB] = await Promise.allSettled([
+    PROVIDERS[provA].call(sysA, user, modA),
+    PROVIDERS[provB].call(sysB, user, modB),
+  ]);
+
+  const outA = resA.status==='fulfilled' ? resA.value : { text:'❌ '+resA.reason.message, elapsed:0, tokens:0, error:true };
+  const outB = resB.status==='fulfilled' ? resB.value : { text:'❌ '+resB.reason.message, elapsed:0, tokens:0, error:true };
+
+  setResult('a', outA, provA, modA);
+  setResult('b', outB, provB, modB);
+
+  // History
+  const entry = { id:Date.now(), ts:new Date().toLocaleTimeString(), user, sysA, sysB, provA, provB, modA, modB, outA:outA.text, outB:outB.text, timeA:outA.elapsed, timeB:outB.elapsed };
+  history.unshift(entry);
+  if (history.length>30) history=history.slice(0,30);
+  localStorage.setItem('pl_history_v2', JSON.stringify(history));
+  runCount++;
+  localStorage.setItem('pl_runs_v2', runCount);
   document.getElementById('run-count').textContent = runCount;
 
-  // ── Keyboard shortcut ─────────────────────────────────────────────────────
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runTest();
-  });
-  document.getElementById('user-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runTest(); }
-  });
+  renderHistory();
+  btn.disabled=false;
+  btn.innerHTML='▶ Run Test';
+}
 
-  // ── Gemini call ───────────────────────────────────────────────────────────
-  async function callGemini(systemPrompt, userPrompt) {
-    const model     = document.getElementById('model-sel').value;
-    const temp      = parseFloat(document.getElementById('temp').value);
-    const maxTokens = parseInt(document.getElementById('max-tokens').value);
+// ── Render results ──────────────────────────────────────────────────────────
+function setLoading(side, prov, model) {
+  const panel = document.getElementById('results-grid').children[side==='a'?0:1];
+  panel.querySelector('.result-meta').innerHTML = `<span class="badge ${side}">${side.toUpperCase()}</span><span class="provider-chip pc-${prov}">${PROVIDERS[prov].label}</span><span class="meta-chip">running…</span>`;
+  const body = panel.querySelector('.result-body');
+  body.className='result-body loading';
+  body.innerHTML='<div class="spinner"></div> Waiting for response…';
+  const foot = panel.querySelector('.result-footer');
+  if (foot) foot.remove();
+}
 
-    const contents = [];
-    if (systemPrompt.trim()) {
-      contents.push({ role: 'user',  parts: [{ text: `[SYSTEM INSTRUCTIONS]\n${systemPrompt}\n\n[USER INPUT]\n${userPrompt}` }] });
-    } else {
-      contents.push({ role: 'user', parts: [{ text: userPrompt }] });
-    }
-
-    const t0 = Date.now();
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents,
-          generationConfig: { temperature: temp, maxOutputTokens: maxTokens }
-        })
-      }
-    );
-    const elapsed = Date.now() - t0;
-    if (!res.ok) {
-      const e = await res.json().catch(() => ({}));
-      throw new Error(e.error?.message || `HTTP ${res.status}`);
-    }
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '(no response)';
-    const tokens = data.usageMetadata?.totalTokenCount || '—';
-    return { text, elapsed, tokens };
+function setResult(side, out, prov, model) {
+  const panel = document.getElementById('results-grid').children[side==='a'?0:1];
+  const shortModel = model.split('/').pop();
+  panel.querySelector('.result-meta').innerHTML = `
+    <span class="badge ${side}">${side.toUpperCase()}</span>
+    <span class="provider-chip pc-${prov}">${PROVIDERS[prov].label}</span>
+    <span class="meta-chip" title="${model}">${shortModel.length>22?shortModel.slice(0,22)+'…':shortModel}</span>
+    <span class="meta-chip time">⏱ ${(out.elapsed/1000).toFixed(2)}s</span>
+    <span class="meta-chip tokens">🔤 ${out.tokens}</span>`;
+  const body = panel.querySelector('.result-body');
+  body.className = 'result-body' + (out.error?' error':'');
+  body.textContent = out.text;
+  const oldFoot = panel.querySelector('.result-footer');
+  if (oldFoot) oldFoot.remove();
+  if (!out.error) {
+    const foot = document.createElement('div');
+    foot.className='result-footer';
+    foot.innerHTML=`<span class="rate-label">Rate:</span><div class="stars" id="stars-${side}">${[1,2,3,4,5].map(n=>`<span class="star" onclick="rate('${side}',${n})" data-v="${n}">★</span>`).join('')}</div><button class="copy-btn" onclick="copyResult('${side}')">Copy</button>`;
+    panel.appendChild(foot);
   }
+}
 
-  // ── Run test ──────────────────────────────────────────────────────────────
-  async function runTest() {
-    if (!apiKey) { alert('Please connect your Gemini API key first.'); return; }
-    const sysA = document.getElementById('system-a').value.trim();
-    const sysB = document.getElementById('system-b').value.trim();
-    const user = document.getElementById('user-input').value.trim();
-    if (!user) { alert('Please enter a user input message.'); return; }
-    if (!sysA && !sysB) { alert('Please enter at least one system prompt.'); return; }
-
-    ratings = { a: 0, b: 0 };
-    document.getElementById('winner-area').innerHTML = '';
-
-    const btn = document.getElementById('run-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="spinner"></div> Running…';
-
-    setResultLoading('a');
-    setResultLoading('b');
-
-    const [resA, resB] = await Promise.allSettled([
-      sysA ? callGemini(sysA, user) : Promise.resolve(null),
-      sysB ? callGemini(sysB, user) : Promise.resolve(null),
-    ]);
-
-    const outA = resA.status === 'fulfilled' ? resA.value : { text: '❌ Error: ' + resA.reason.message, elapsed: 0, tokens: 0 };
-    const outB = resB.status === 'fulfilled' ? resB.value : { text: '❌ Error: ' + resB.reason.message, elapsed: 0, tokens: 0 };
-
-    if (!sysA) { setResultEmpty('a'); } else { setResult('a', outA); }
-    if (!sysB) { setResultEmpty('b'); } else { setResult('b', outB); }
-
-    // Save to history
-    const entry = {
-      id: Date.now(),
-      ts: new Date().toLocaleTimeString(),
-      user,
-      sysA: sysA || '(none)',
-      sysB: sysB || '(none)',
-      outA: outA.text,
-      outB: outB.text,
-      timeA: outA.elapsed,
-      timeB: outB.elapsed,
-    };
-    history.unshift(entry);
-    if (history.length > 30) history = history.slice(0, 30);
-    localStorage.setItem('prompt_history', JSON.stringify(history));
-
-    runCount++;
-    localStorage.setItem('run_count', runCount);
-    document.getElementById('run-count').textContent = runCount;
-
-    renderHistory();
-
-    btn.disabled = false;
-    btn.innerHTML = '▶ Run Test';
+function rate(side, val) {
+  ratings[side]=val;
+  document.querySelectorAll(`#stars-${side} .star`).forEach(s=>s.classList.toggle('active',parseInt(s.dataset.v)<=val));
+  checkWinner();
+}
+function checkWinner() {
+  if (!ratings.a||!ratings.b) return;
+  const area = document.getElementById('winner-area');
+  if (ratings.a===ratings.b) {
+    area.innerHTML=`<div class="winner-banner"><span class="winner-icon">🤝</span><div class="winner-text"><strong>It's a tie!</strong> Both scored ${ratings.a}/5. Try tweaking the prompts or switching models.</div></div>`;
+  } else {
+    const w=ratings.a>ratings.b?'A':'B'; const score=Math.max(ratings.a,ratings.b);
+    area.innerHTML=`<div class="winner-banner"><span class="winner-icon">🏆</span><div class="winner-text"><strong>Side ${w} wins</strong> with ${score}/5 — use that prompt/model combination!</div></div>`;
   }
+}
+function copyResult(side) {
+  const panel = document.getElementById('results-grid').children[side==='a'?0:1];
+  navigator.clipboard.writeText(panel.querySelector('.result-body').textContent).catch(()=>{});
+}
 
-  // ── Result rendering ──────────────────────────────────────────────────────
-  function setResultLoading(side) {
-    const grid = document.getElementById('results-grid');
-    const idx = side === 'a' ? 0 : 1;
-    const panel = grid.children[idx];
-    panel.querySelector('.result-header .result-meta').innerHTML = `
-      <span class="badge ${side}">${side.toUpperCase()}</span>
-      <span class="meta-chip">running…</span>`;
-    panel.querySelector('.result-body').className = 'result-body loading';
-    panel.querySelector('.result-body').innerHTML = '<div class="spinner"></div> Waiting for Gemini…';
-    if (panel.querySelector('.result-footer')) panel.querySelector('.result-footer').remove();
-  }
-
-  function setResultEmpty(side) {
-    const grid = document.getElementById('results-grid');
-    const idx = side === 'a' ? 0 : 1;
-    const panel = grid.children[idx];
-    panel.querySelector('.result-header .result-meta').innerHTML = `
-      <span class="badge ${side}">${side.toUpperCase()}</span>
-      <span class="meta-chip">no prompt</span>`;
-    panel.querySelector('.result-body').className = 'result-body empty';
-    panel.querySelector('.result-body').textContent = 'No system prompt entered for this side.';
-  }
-
-  function setResult(side, out) {
-    const grid = document.getElementById('results-grid');
-    const idx = side === 'a' ? 0 : 1;
-    const panel = grid.children[idx];
-
-    panel.querySelector('.result-header .result-meta').innerHTML = `
-      <span class="badge ${side}">${side.toUpperCase()}</span>
-      <span class="meta-chip time">⏱ ${(out.elapsed/1000).toFixed(2)}s</span>
-      <span class="meta-chip tokens">🔤 ${out.tokens} tokens</span>`;
-
-    const body = panel.querySelector('.result-body');
-    body.className = 'result-body';
-    body.textContent = out.text;
-
-    // Footer with rating + copy
-    if (panel.querySelector('.result-footer')) panel.querySelector('.result-footer').remove();
-    const footer = document.createElement('div');
-    footer.className = 'result-footer';
-    footer.innerHTML = `
-      <span class="rate-label">Rate:</span>
-      <div class="stars" id="stars-${side}">
-        ${[1,2,3,4,5].map(n => `<span class="star" onclick="rate('${side}',${n})" data-v="${n}">★</span>`).join('')}
+// ── History ─────────────────────────────────────────────────────────────────
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  document.getElementById('history-count').textContent = `${history.length} run${history.length!==1?'s':''}`;
+  if (!history.length) { list.innerHTML='<div class="history-empty">No tests yet.</div>'; return; }
+  list.innerHTML = history.map((h,i)=>`
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div class="history-item-main">
+        <div class="history-item-prompt"><strong>Input:</strong> ${escHtml(h.user.slice(0,70))}${h.user.length>70?'…':''}</div>
+        <div class="history-item-models">${h.provA}/${h.modA.split('/').pop()} vs ${h.provB}/${h.modB.split('/').pop()}</div>
       </div>
-      <button class="copy-btn" onclick="copyResult('${side}')">Copy</button>`;
-    panel.appendChild(footer);
-  }
+      <div class="history-item-meta">
+        <span class="meta-chip time">⏱ ${(h.timeA/1000).toFixed(1)}s / ${(h.timeB/1000).toFixed(1)}s</span>
+        <span class="meta-chip">${h.ts}</span>
+      </div>
+    </div>`).join('');
+}
+function loadHistory(i) {
+  const h=history[i];
+  document.getElementById('provider-a').value=h.provA; updateModels('a');
+  document.getElementById('provider-b').value=h.provB; updateModels('b');
+  setTimeout(()=>{ document.getElementById('model-a').value=h.modA; document.getElementById('model-b').value=h.modB; },10);
+  document.getElementById('sys-a').value=h.sysA;
+  document.getElementById('sys-b').value=h.sysB;
+  document.getElementById('user-input').value=h.user;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function clearHistory() { history=[]; localStorage.removeItem('pl_history_v2'); renderHistory(); }
 
-  function rate(side, val) {
-    ratings[side] = val;
-    const stars = document.querySelectorAll(`#stars-${side} .star`);
-    stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v) <= val));
-    checkWinner();
-  }
+// ── Tips ─────────────────────────────────────────────────────────────────────
+const TIPS = {
+  basic:{
+    provA:'gemini', provB:'gemini',
+    sysA:'Answer the question.',
+    sysB:'You are a helpful assistant. Answer the question clearly and concisely in 2-3 sentences. Start with the most important point.',
+    user:'What are the best ways to stay focused while working from home?'
+  },
+  models:{
+    provA:'gemini', provB:'groq',
+    sysA:'You are a helpful assistant. Give practical, actionable advice.',
+    sysB:'You are a helpful assistant. Give practical, actionable advice.',
+    user:'What are the best ways to stay focused while working from home?'
+  },
+  role:{
+    provA:'gemini', provB:'gemini',
+    sysA:'Help the user with their task.',
+    sysB:'You are a senior productivity coach with 20 years of experience working with executives. Give direct, evidence-based advice. Be concise. Use a warm but professional tone.',
+    user:'I keep procrastinating on important tasks. What should I do?'
+  },
+  examples:{
+    provA:'gemini', provB:'gemini',
+    sysA:'Classify the priority of this task as high, medium, or low.',
+    sysB:`Classify the priority of this task as high, medium, or low.
 
-  function checkWinner() {
-    if (ratings.a === 0 || ratings.b === 0) return;
-    const area = document.getElementById('winner-area');
-    if (ratings.a === ratings.b) {
-      area.innerHTML = `<div class="winner-banner"><span class="winner-icon">🤝</span><div class="winner-text"><strong>It's a tie!</strong> Both prompts scored ${ratings.a}/5. Try tweaking one of them.</div></div>`;
-    } else {
-      const winner = ratings.a > ratings.b ? 'A' : 'B';
-      const score  = Math.max(ratings.a, ratings.b);
-      area.innerHTML = `<div class="winner-banner"><span class="winner-icon">🏆</span><div class="winner-text"><strong>Prompt ${winner} wins</strong> with ${score}/5 — copy it to your project!</div></div>`;
-    }
-  }
-
-  function copyResult(side) {
-    const grid = document.getElementById('results-grid');
-    const idx = side === 'a' ? 0 : 1;
-    const text = grid.children[idx].querySelector('.result-body').textContent;
-    navigator.clipboard.writeText(text).catch(() => {});
-  }
-
-  function clearPrompt(side) {
-    document.getElementById(`system-${side}`).value = '';
-  }
-
-  // ── History ───────────────────────────────────────────────────────────────
-  function renderHistory() {
-    const list = document.getElementById('history-list');
-    document.getElementById('history-count').textContent = `${history.length} run${history.length!==1?'s':''}`;
-    if (!history.length) {
-      list.innerHTML = '<div class="history-empty">No tests run yet.</div>';
-      return;
-    }
-    list.innerHTML = history.map((h, i) => `
-      <div class="history-item" onclick="loadHistory(${i})">
-        <div>
-          <div class="history-item-prompt"><strong>Input:</strong> ${escHtml(h.user.slice(0,60))}${h.user.length>60?'…':''}</div>
-          <div class="history-item-prompt" style="margin-top:3px"><strong>A:</strong> ${escHtml((h.outA||'').slice(0,60))}…</div>
-        </div>
-        <div class="history-item-meta">
-          <span class="meta-chip time">⏱ ${(h.timeA/1000).toFixed(1)}s / ${(h.timeB/1000).toFixed(1)}s</span>
-          <span class="meta-chip">${h.ts}</span>
-        </div>
-      </div>`).join('');
-  }
-
-  function loadHistory(idx) {
-    const h = history[idx];
-    document.getElementById('system-a').value   = h.sysA === '(none)' ? '' : h.sysA;
-    document.getElementById('system-b').value   = h.sysB === '(none)' ? '' : h.sysB;
-    document.getElementById('user-input').value = h.user;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function clearHistory() {
-    history = [];
-    localStorage.removeItem('prompt_history');
-    renderHistory();
-  }
-
-  // ── Tip presets ───────────────────────────────────────────────────────────
-  const tips = {
-    basic: {
-      sysA: 'Rephrase the task.',
-      sysB: 'You are a productivity assistant. Rephrase the following task as a clear, concise, actionable to-do item starting with an action verb. Keep it under 10 words. Return ONLY the rephrased task, nothing else.',
-      user: 'email thing with the client'
-    },
-    role: {
-      sysA: 'Give feedback on this task description.',
-      sysB: 'You are a senior project manager with 15 years of experience. Give brief, direct feedback on this task description and suggest one improvement.',
-      user: 'need to do something about the website performance'
-    },
-    examples: {
-      sysA: 'Suggest a priority level (high, medium, or low) for this task.',
-      sysB: `Suggest a priority level for this task. Use these examples as a guide:
-"Server is down in production" → high
-"Update the readme file" → low
-"Fix checkout bug causing 5% order failures" → high
-"Rename a variable in the codebase" → low
+Examples:
+- "Server is down in production" → high
+- "Update the team wiki page" → low  
+- "Fix bug causing 10% of checkouts to fail" → high
+- "Rename a CSS class" → low
 
 Reply with ONLY one word: high, medium, or low.`,
-      user: 'Migrate the database to the new server next week'
-    },
-    format: {
-      sysA: 'Break this goal into subtasks.',
-      sysB: `Break the goal into exactly 4 subtasks. Return ONLY a JSON array, no explanation, no markdown:
-[{"task":"subtask description","priority":"high|med|low","time":"e.g. 30 mins"}]`,
-      user: 'Launch a new landing page for our product'
-    },
-    tone: {
-      sysA: 'You are a task assistant. Help the user with their task.',
-      sysB: 'You are an encouraging, friendly productivity coach. Respond warmly and motivationally. Use simple language. Add a brief word of encouragement at the end.',
-      user: 'I need to finish the quarterly report by Friday but I keep procrastinating'
-    },
-    chain: {
-      sysA: 'What priority should this task be? Answer with high, medium, or low.',
-      sysB: `What priority should this task be? Think through it step by step:
-1. Consider the impact if not done
-2. Consider the urgency / deadline
-3. Consider who is affected
-Then give your final answer as: Priority: [high/medium/low]
-Reason: [one sentence]`,
-      user: 'Update the SSL certificate that expires in 3 weeks'
-    }
-  };
+    user:'Schedule a database migration for next month'
+  },
+  format:{
+    provA:'gemini', provB:'gemini',
+    sysA:'Break this goal into subtasks.',
+    sysB:`Break this goal into exactly 4 subtasks. Return ONLY valid JSON, no explanation, no markdown fences:
+[{"task":"description","priority":"high|med|low","estimate":"e.g. 1 hour"}]`,
+    user:'Launch a new landing page for our product'
+  },
+  cot:{
+    provA:'gemini', provB:'gemini',
+    sysA:'What priority should this task be? Answer with: high, medium, or low.',
+    sysB:`What priority should this task be? Think step by step:
+1. What is the impact if this is NOT done?
+2. How urgent is the deadline?
+3. How many people are affected?
 
-  function loadTip(key) {
-    const t = tips[key];
-    document.getElementById('system-a').value   = t.sysA;
-    document.getElementById('system-b').value   = t.sysB;
-    document.getElementById('user-input').value = t.user;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+Then give your final answer as:
+Reasoning: [2 sentences]
+Priority: [high/medium/low]`,
+    user:'Renew the SSL certificate that expires in 3 weeks'
   }
+};
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
-  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function loadTip(key) {
+  const t=TIPS[key];
+  document.getElementById('provider-a').value=t.provA; updateModels('a');
+  document.getElementById('provider-b').value=t.provB; updateModels('b');
+  document.getElementById('sys-a').value=t.sysA;
+  document.getElementById('sys-b').value=t.sysB;
+  document.getElementById('user-input').value=t.user;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-  // ── Init ──────────────────────────────────────────────────────────────────
-  renderHistory();
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-  // Load a starter tip
-  loadTip('basic');
+// Init
+renderHistory();
+loadTip('models');
 </script>
 </body>
 </html>
