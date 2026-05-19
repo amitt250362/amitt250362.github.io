@@ -9,14 +9,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #ffffff; --bg-secondary: #f5f5f4; --bg-tertiary: #eeede9;
-      --text: #1a1a1a; --text-secondary: #6b6b6b; --texta-tertiary: #a0a0a0;
+      --text: #1a1a1a; --text-secondary: #6b6b6b; --text-tertiary: #a0a0a0;
       --border: rgba(0,0,0,0.12); --border-md: rgba(0,0,0,0.22); --border-strong: rgba(0,0,0,0.35);
       --radius-md: 8px; --radius-lg: 12px;
       --success-bg: #eaf3de; --success-text: #3b6d11; --success-border: #639922;
       --danger-bg: #fcebeb; --danger-text: #a32d2d;
       --warning-bg: #faeeda; --warning-text: #854f0b;
       --info-bg: #e6f1fb; --info-text: #185fa5;
-      --ai-bg: #f3f0ff; --ai-text: #5b21b6; --ai-border: #c4b5fd;
+      --ai-bg: #f0fdf4; --ai-text: #166534; --ai-border: #86efac;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -27,7 +27,7 @@
         --danger-bg: #501313; --danger-text: #f09595;
         --warning-bg: #412402; --warning-text: #fac775;
         --info-bg: #042c53; --info-text: #85b7eb;
-        --ai-bg: #1e1433; --ai-text: #c4b5fd; --ai-border: #5b21b6;
+        --ai-bg: #052e16; --ai-text: #86efac; --ai-border: #166534;
       }
     }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-tertiary); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
@@ -36,16 +36,18 @@
     .title { font-size: 28px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
     .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
 
+    /* API Key Banner */
     .api-banner { background: var(--ai-bg); border: 1px solid var(--ai-border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .api-banner i { color: var(--ai-text); font-size: 20px; flex-shrink: 0; }
     .api-banner-text { flex: 1; font-size: 13px; color: var(--ai-text); min-width: 150px; }
     .api-banner-text strong { display: block; margin-bottom: 2px; }
     .api-input-row { display: flex; gap: 6px; flex: 2; min-width: 220px; }
     .api-input { flex: 1; height: 34px; padding: 0 10px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--bg); color: var(--text); font-size: 13px; font-family: monospace; outline: none; }
-    .api-save-btn { height: 34px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--ai-bg); color: var(--ai-text); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
-    .api-save-btn:hover { opacity: 0.8; }
+    .api-save-btn { height: 34px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--ai-text); color: #fff; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .api-save-btn:hover { opacity: 0.85; }
     .api-saved { font-size: 12px; color: var(--success-text); display: flex; align-items: center; gap: 4px; }
 
+    /* Add Task */
     .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
     input[type="text"] { flex: 1; height: 42px; padding: 0 14px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg); color: var(--text); font-size: 15px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
     input[type="text"]::placeholder { color: var(--text-tertiary); }
@@ -56,17 +58,20 @@
     .add-btn:hover { background: var(--bg-secondary); }
     .add-btn:active { transform: scale(0.98); }
 
+    /* AI Buttons */
     .ai-action-row { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
-    .ai-btn { height: 34px; padding: 0 13px; border-radius: 20px; border: 1px solid var(--ai-border); background: var(--ai-bg); color: var(--ai-text); font-size: 13px; display: flex; align-items: center; gap: 5px; white-space: nowrap; transition: opacity 0.12s; }
+    .ai-btn { height: 34px; padding: 0 13px; border-radius: 20px; border: 1px solid var(--ai-border); background: var(--ai-bg); color: var(--ai-text); font-size: 13px; display: flex; align-items: center; gap: 5px; white-space: nowrap; transition: opacity 0.12s; font-weight: 500; }
     .ai-btn:hover { opacity: 0.75; }
-    .ai-btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .ai-btn i { font-size: 15px; }
+    .ai-powered { font-size: 11px; color: var(--text-tertiary); display: flex; align-items: center; gap: 4px; margin-bottom: 1rem; }
 
+    /* Filters */
     .filters { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
     .filter-btn { padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; transition: all 0.12s; }
     .filter-btn:hover { background: var(--bg-secondary); color: var(--text); }
     .filter-btn.active { background: var(--bg); border-color: var(--border-strong); color: var(--text); font-weight: 500; }
 
+    /* Tasks */
     .task-list { display: flex; flex-direction: column; gap: 6px; }
     .task-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); transition: border-color 0.12s, opacity 0.15s; animation: slideIn 0.18s ease; }
     @keyframes slideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
@@ -87,25 +92,28 @@
     .empty { text-align: center; padding: 3rem 1rem; color: var(--text-tertiary); font-size: 14px; }
     .empty i { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.4; }
 
+    /* Stats */
     .stats { display: flex; gap: 10px; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
     .stat { flex: 1; background: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px 14px; }
     .stat-val { font-size: 20px; font-weight: 500; }
     .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
-    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: fadeUp 0.2s ease; z-index: 999; }
+    /* Toast */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: fadeUp 0.2s ease; z-index: 999; white-space: nowrap; }
     @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* AI Preview */
     .ai-preview { background: var(--ai-bg); border: 1px solid var(--ai-border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1rem; animation: slideIn 0.18s ease; }
     .ai-preview-title { font-size: 13px; font-weight: 600; color: var(--ai-text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .ai-preview-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--ai-border); font-size: 14px; }
+    .ai-preview-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--ai-border); font-size: 14px; color: var(--text); }
     .ai-preview-item:last-child { border-bottom: none; }
     .ai-preview-item input[type="checkbox"] { accent-color: var(--ai-text); width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
     .ai-preview-item label { flex: 1; cursor: pointer; }
     .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; flex-shrink: 0; }
     .ai-preview-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .confirm-btn { height: 32px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--ai-border); background: var(--ai-text); color: #fff; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .confirm-btn { height: 32px; padding: 0 14px; border-radius: var(--radius-md); border: none; background: var(--ai-text); color: #fff; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
     .confirm-btn:hover { opacity: 0.85; }
     .cancel-btn { height: 32px; padding: 0 14px; border-radius: var(--radius-md); border: 1px solid var(--border-md); background: transparent; color: var(--text-secondary); font-size: 13px; }
     .cancel-btn:hover { background: var(--bg-secondary); }
@@ -118,18 +126,20 @@
     <div class="subtitle" id="date-label"></div>
   </div>
 
+  <!-- API Key Banner -->
   <div class="api-banner" id="api-banner">
-    <i class="ti ti-robot"></i>
+    <i class="ti ti-sparkles"></i>
     <div class="api-banner-text">
-      <strong>AI Features</strong>
-      Paste your Anthropic API key to unlock AI features (stored only in your browser).
+      <strong>Google Gemini AI</strong>
+      Paste your Gemini API key to unlock AI features (stored only in your browser).
     </div>
     <div class="api-input-row">
-      <input class="api-input" type="password" id="api-key-input" placeholder="sk-ant-..." />
+      <input class="api-input" type="password" id="api-key-input" placeholder="AIza..." />
       <button class="api-save-btn" onclick="saveApiKey()">Save</button>
     </div>
   </div>
 
+  <!-- Add Task -->
   <div class="input-row">
     <input type="text" id="task-input" placeholder="Describe a task or goal…" />
     <select id="priority-sel">
@@ -140,14 +150,17 @@
     <button class="add-btn" onclick="addTask()"><i class="ti ti-plus"></i> Add</button>
   </div>
 
+  <!-- AI Buttons -->
   <div class="ai-action-row">
     <button class="ai-btn" onclick="aiRephrase()"><i class="ti ti-wand"></i> Smart Rephrase</button>
     <button class="ai-btn" onclick="aiPriority()"><i class="ti ti-bolt"></i> Suggest Priority</button>
     <button class="ai-btn" onclick="aiBreakdown()"><i class="ti ti-list-details"></i> Break into Subtasks</button>
   </div>
+  <div class="ai-powered"><i class="ti ti-sparkles"></i> Powered by Google Gemini · Free tier · 1,500 requests/day</div>
 
   <div id="ai-preview-area"></div>
 
+  <!-- Filters -->
   <div class="filters">
     <button class="filter-btn active" id="f-all"    onclick="setFilter('all')">All</button>
     <button class="filter-btn"        id="f-active" onclick="setFilter('active')">Active</button>
@@ -159,6 +172,7 @@
 </div>
 
 <script>
+  // ── State ─────────────────────────────────────────────────────────────────
   let tasks = JSON.parse(localStorage.getItem('todos_v1') || 'null') || [
     { id: 1, text: 'Review project requirements',    done: false, priority: 'high' },
     { id: 2, text: 'Set up development environment', done: true,  priority: 'med'  },
@@ -168,24 +182,25 @@
   let filter = 'all';
   let nextId = tasks.reduce((m, t) => Math.max(m, t.id), 0) + 1;
 
+  // ── Date ──────────────────────────────────────────────────────────────────
   const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const d = new Date();
   document.getElementById('date-label').textContent = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
 
   // ── API Key ───────────────────────────────────────────────────────────────
-  let apiKey = localStorage.getItem('anthropic_key') || '';
+  let apiKey = localStorage.getItem('gemini_key') || '';
   function saveApiKey() {
     const val = document.getElementById('api-key-input').value.trim();
     if (!val) return;
     apiKey = val;
-    localStorage.setItem('anthropic_key', apiKey);
+    localStorage.setItem('gemini_key', apiKey);
     document.getElementById('api-banner').innerHTML = `
-      <i class="ti ti-robot" style="color:var(--ai-text);font-size:20px"></i>
-      <span class="api-saved"><i class="ti ti-circle-check"></i>&nbsp;API key saved — AI features are active!</span>
+      <i class="ti ti-sparkles" style="color:var(--ai-text);font-size:20px"></i>
+      <span class="api-saved"><i class="ti ti-circle-check"></i>&nbsp;Gemini API key saved — AI features are active!</span>
       <button class="cancel-btn" style="margin-left:auto;font-size:12px" onclick="clearKey()">Change key</button>`;
   }
-  function clearKey() { apiKey=''; localStorage.removeItem('anthropic_key'); location.reload(); }
+  function clearKey() { apiKey=''; localStorage.removeItem('gemini_key'); location.reload(); }
   if (apiKey) { document.getElementById('api-key-input').value = apiKey; saveApiKey(); }
 
   // ── Core ──────────────────────────────────────────────────────────────────
@@ -205,39 +220,48 @@
     save(); render();
   }
   function toggle(id) { const t=tasks.find(t=>t.id===id); if(t){t.done=!t.done;save();render();} }
-  function del(id) { tasks=tasks.filter(t=>t.id!==id); save(); render(); }
+  function del(id)    { tasks=tasks.filter(t=>t.id!==id); save(); render(); }
   document.getElementById('task-input').addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
 
   // ── Toast ─────────────────────────────────────────────────────────────────
   let toastEl = null;
   function showToast(msg, loading=false) {
-    if(toastEl) toastEl.remove();
+    if (toastEl) toastEl.remove();
     toastEl = document.createElement('div');
     toastEl.className = 'toast';
-    toastEl.innerHTML = (loading?'<div class="spinner"></div>':'')+msg;
+    toastEl.innerHTML = (loading ? '<div class="spinner"></div>' : '') + msg;
     document.body.appendChild(toastEl);
-    if(!loading) setTimeout(()=>{ if(toastEl){toastEl.remove();toastEl=null;} }, 3200);
+    if (!loading) setTimeout(() => { if(toastEl){toastEl.remove();toastEl=null;} }, 3200);
   }
   function hideToast() { if(toastEl){toastEl.remove();toastEl=null;} }
 
-  // ── Claude API ────────────────────────────────────────────────────────────
-  async function callClaude(system, user) {
-    if (!apiKey) { showToast('⚠️ Please save your Anthropic API key first.'); return null; }
+  // ── Gemini API ────────────────────────────────────────────────────────────
+  async function callGemini(prompt) {
+    if (!apiKey) { showToast('⚠️ Please save your Gemini API key first.'); return null; }
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600, system, messages:[{role:'user',content:user}] })
-      });
-      if (!res.ok) { const e=await res.json().catch(()=>({})); showToast('❌ '+(e.error?.message||'API error. Check your key.')); return null; }
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.4, maxOutputTokens: 600 }
+          })
+        }
+      );
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        const msg = e.error?.message || 'API error. Check your key.';
+        showToast('❌ ' + msg);
+        return null;
+      }
       const data = await res.json();
-      return data.content.map(b=>b.text||'').join('');
-    } catch(e) { showToast('❌ Network error. Check your connection.'); return null; }
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } catch(e) {
+      showToast('❌ Network error. Check your connection.');
+      return null;
+    }
   }
 
   function getInput() { return document.getElementById('task-input').value.trim(); }
@@ -247,9 +271,8 @@
   async function aiRephrase() {
     const text = requireInput(); if (!text) return;
     showToast('Rephrasing your task…', true);
-    const result = await callClaude(
-      'You are a productivity assistant. Rephrase the given task as a clear, concise, actionable to-do item starting with an action verb. Return ONLY the rephrased task — no quotes, no explanation.',
-      text
+    const result = await callGemini(
+      `You are a productivity assistant. Rephrase the following task as a clear, concise, actionable to-do item starting with an action verb.\nReturn ONLY the rephrased task — no quotes, no explanation, no extra text.\n\nTask: ${text}`
     );
     hideToast();
     if (!result) return;
@@ -261,32 +284,35 @@
   async function aiPriority() {
     const text = requireInput(); if (!text) return;
     showToast('Analysing priority…', true);
-    const result = await callClaude(
-      'You are a productivity assistant. Based on the task, suggest a priority. Reply with ONLY one word: high, med, or low.',
-      text
+    const result = await callGemini(
+      `You are a productivity assistant. Based on the task below, suggest a priority level.\nReply with ONLY one word: high, med, or low. No other text.\n\nTask: ${text}`
     );
     hideToast();
     if (!result) return;
-    const raw = result.trim().toLowerCase().replace(/[^a-z]/g,'');
+    const raw = result.trim().toLowerCase().replace(/[^a-z]/g, '');
     const priority = ['high','med','low'].includes(raw) ? raw : 'med';
     document.getElementById('priority-sel').value = priority;
     const label = priority==='high'?'High':priority==='med'?'Medium':'Low';
-    showToast(`🤖 AI suggests: <strong>${label}</strong> priority — applied!`);
+    showToast(`✨ Gemini suggests: <strong>${label}</strong> priority — applied!`);
   }
 
   // ── 3. Break into Subtasks ────────────────────────────────────────────────
   async function aiBreakdown() {
     const text = requireInput(); if (!text) return;
     showToast('Breaking into subtasks…', true);
-    const result = await callClaude(
-      'You are a productivity assistant. Break the given goal into 3–6 clear, actionable subtasks.\nReturn ONLY a JSON array like: [{"text":"subtask","priority":"high|med|low"}]\nNo extra text, no markdown fences.',
-      text
+    const result = await callGemini(
+      `You are a productivity assistant. Break the following goal into 3–6 clear, actionable subtasks.\nReturn ONLY a valid JSON array in this exact format — no markdown, no code fences, no explanation:\n[{"text":"subtask description","priority":"high|med|low"}]\n\nGoal: ${text}`
     );
     hideToast();
     if (!result) return;
     let subtasks;
-    try { subtasks = JSON.parse(result.trim().replace(/```json|```/g,'')); }
-    catch(e) { showToast('❌ Could not parse AI response. Try again.'); return; }
+    try {
+      const clean = result.trim().replace(/```json|```/g, '').trim();
+      subtasks = JSON.parse(clean);
+    } catch(e) {
+      showToast('❌ Could not parse AI response. Try again.');
+      return;
+    }
     document.getElementById('task-input').value = '';
     showPreview('breakdown', subtasks, text);
   }
@@ -299,7 +325,7 @@
     const area = document.getElementById('ai-preview-area');
     const title = isBreak
       ? `<i class="ti ti-list-details"></i> ${items.length} subtasks for: <em>${escHtml(original)}</em>`
-      : `<i class="ti ti-wand"></i> AI rephrased your task:`;
+      : `<i class="ti ti-wand"></i> Gemini rephrased your task:`;
     const rows = items.map((item, i) => `
       <div class="ai-preview-item">
         ${isBreak ? `<input type="checkbox" id="ai-cb-${i}" checked>` : ''}
@@ -312,7 +338,7 @@
         ${rows}
         <div class="ai-preview-actions">
           <button class="confirm-btn" onclick="confirmPreview('${type}')">
-            <i class="ti ti-circle-check"></i> ${isBreak?'Add selected':'Use this'}
+            <i class="ti ti-circle-check"></i> ${isBreak ? 'Add selected tasks' : 'Use this'}
           </button>
           <button class="cancel-btn" onclick="cancelPreview()">Dismiss</button>
         </div>
@@ -338,7 +364,7 @@
     const list = document.getElementById('task-list');
     list.innerHTML = !visible.length
       ? `<div class="empty"><i class="ti ti-inbox"></i>${filter==='done'?'No completed tasks yet.':filter==='active'?'All tasks done! 🎉':'No tasks yet — add one above.'}</div>`
-      : visible.map(t=>`
+      : visible.map(t => `
           <div class="task-item${t.done?' done':''}">
             <button class="check-btn${t.done?' checked':''}" onclick="toggle(${t.id})" aria-label="${t.done?'Mark incomplete':'Mark complete'}">
               ${t.done?'<i class="ti ti-check"></i>':''}
