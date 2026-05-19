@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prompt Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #111118;
+      --surface2:  #1a1a24;
+      --surface3:  #22222f;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.13);
+      --text:      #e8e6f0;
+      --text2:     #8a87a0;
+      --text3:     #4a4860;
+      --accent:    #7c6aff;
+      --accent2:   #a855f7;
+      --green:     #22d3a5;
+      --red:       #ff5f7e;
+      --yellow:    #fbbf24;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Syne', sans-serif;
+      --radius:    10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .layout { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+    /* Header */
+    header {
+      padding: 2rem 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-text span { color: var(--accent); }
+    .tagline { font-size: 12px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    /* API key area */
+    .api-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 6px 6px 6px 12px;
+    }
+    .api-label { font-size: 11px; font-family: var(--mono); color: var(--text3); white-space: nowrap; }
+    .api-row input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      width: 180px;
+    }
+    .api-row input::placeholder { color: var(--text3); }
+    .btn-save {
+      height: 28px; padding: 0 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sans);
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .btn-save:hover { opacity: 0.85; }
+    .key-saved {
+      font-size: 11px; font-family: var(--mono);
+      color: var(--green);
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    /* Sections */
+    .section-label {
+      font-size: 10px;
+      font-family: var(--mono);
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+
+    /* Main grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 720px) { .main-grid { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 10px;
+      font-family: var(--mono);
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--surface3);
+      color: var(--text2);
+      border: 1px solid var(--border2);
+    }
+    .badge.a { background: rgba(124,106,255,0.15); color: var(--accent); border-color: rgba(124,106,255,0.3); }
+    .badge.b { background: rgba(168,85,247,0.15); color: var(--accent2); border-color: rgba(168,85,247,0.3); }
+
+    .panel-body { padding: 14px 16px; }
+
+    /* Textarea */
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 12px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+      min-height: 120px;
+    }
+    textarea::placeholder { color: var(--text3); }
+    textarea:focus { border-color: var(--accent); }
+    .field-label { font-size: 11px; font-family: var(--mono); color: var(--text3); margin-bottom: 6px; display: block; }
+
+    /* User input panel (full width) */
+    .user-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .user-panel .field { flex: 1; min-width: 200px; }
+    .user-panel textarea { min-height: 60px; }
+
+    /* Settings row */
+    .settings-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .setting { display: flex; align-items: center; gap: 8px; }
+    .setting label { font-size: 12px; font-family: var(--mono); color: var(--text2); white-space: nowrap; }
+    .setting select, .setting input[type="range"] {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 4px 8px;
+      outline: none;
+      cursor: pointer;
+    }
+    .setting input[type="range"] { padding: 0; width: 100px; accent-color: var(--accent); }
+    .setting .val { font-size: 12px; font-family: var(--mono); color: var(--accent); min-width: 28px; }
+    .settings-row .spacer { flex: 1; }
+
+    /* Run button */
+    .btn-run {
+      height: 42px;
+      padding: 0 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--sans);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+      transition: opacity 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn-run:hover { opacity: 0.9; }
+    .btn-run:active { transform: scale(0.98); }
+    .btn-run:disabled { opacity: 0.4; cursor: not-allowed; }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Results */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 720px) { .results-grid { grid-template-columns: 1fr; } }
+
+    .result-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .result-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .result-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .meta-chip {
+      font-size: 10px;
+      font-family: var(--mono);
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--surface3);
+      color: var(--text2);
+    }
+    .meta-chip.time { color: var(--yellow); }
+    .meta-chip.tokens { color: var(--green); }
+
+    .result-body {
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 100px;
+    }
+    .result-body.empty { color: var(--text3); font-style: italic; }
+    .result-body.loading { color: var(--text3); display: flex; align-items: center; gap: 10px; }
+
+    .result-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rate-label { font-size: 11px; font-family: var(--mono); color: var(--text3); }
+    .stars { display: flex; gap: 3px; }
+    .star {
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text3);
+      transition: color 0.1s, transform 0.1s;
+      line-height: 1;
+    }
+    .star:hover, .star.active { color: var(--yellow); transform: scale(1.2); }
+    .copy-btn {
+      margin-left: auto;
+      height: 26px;
+      padding: 0 10px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text2);
+      font-size: 11px;
+      font-family: var(--mono);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .copy-btn:hover { background: var(--surface2); color: var(--text); }
+
+    /* Winner banner */
+    .winner-banner {
+      background: linear-gradient(135deg, rgba(34,211,165,0.1), rgba(124,106,255,0.1));
+      border: 1px solid rgba(34,211,165,0.25);
+      border-radius: var(--radius-lg);
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      animation: fadeIn 0.3s ease;
+    }
+    .winner-icon { font-size: 22px; }
+    .winner-text { flex: 1; }
+    .winner-text strong { color: var(--green); }
+
+    /* History */
+    .history-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .history-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .history-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .clear-btn {
+      height: 26px; padding: 0 10px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text3);
+      font-size: 11px;
+      font-family: var(--mono);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .clear-btn:hover { color: var(--red); border-color: var(--red); }
+
+    .history-list { max-height: 340px; overflow-y: auto; }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+
+    .history-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.12s;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .history-item:last-child { border-bottom: none; }
+    .history-item:hover { background: var(--surface2); }
+    .history-item-prompt {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text2);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .history-item-prompt strong { color: var(--text); font-weight: 500; }
+    .history-item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+    .history-empty {
+      padding: 2.5rem;
+      text-align: center;
+      font-size: 13px;
+      font-family: var(--mono);
+      color: var(--text3);
+    }
+
+    /* Tips */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .tip-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .tip-card:hover { border-color: var(--accent); background: var(--surface2); }
+    .tip-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
+    .tip-desc { font-size: 12px; font-family: var(--mono); color: var(--text2); line-height: 1.5; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚗️</div>
+      <div>
+        <div class="logo-text">Prompt <span>Lab</span></div>
+        <div class="tagline">// compare · iterate · improve</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="api-row" id="api-row">
+        <span class="api-label">GEMINI KEY</span>
+        <input type="password" id="api-input" placeholder="AIza..." />
+        <button class="btn-save" onclick="saveKey()">Connect</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Prompt panels A & B -->
+  <div class="section-label">System Prompts — Define how the AI should behave</div>
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⬡ Prompt <span class="badge a">A</span></div>
+        <button class="clear-btn" onclick="clearPrompt('a')">Clear</button>
+      </div>
+      <div class="panel-body">
+        <textarea id="system-a" rows="6" placeholder="e.g. You are a productivity assistant. Rephrase the given task as a clear, concise to-do item starting with an action verb. Return only the rephrased task."></textarea>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⬡ Prompt <span class="badge b">B</span></div>
+        <button class="clear-btn" onclick="clearPrompt('b')">Clear</button>
+      </div>
+      <div class="panel-body">
+        <textarea id="system-b" rows="6" placeholder="e.g. You are a productivity assistant. Rephrase the task as a clear, actionable to-do item starting with a verb, under 10 words. Use this example: 'emails' → 'Clear and respond to all inbox emails'. Return only the rephrased task."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- User input -->
+  <div class="user-panel">
+    <div class="field" style="flex:2">
+      <span class="field-label">USER INPUT — The message sent to both prompts</span>
+      <textarea id="user-input" rows="2" placeholder="e.g. fix the login bug on the dashboard"></textarea>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+      <button class="btn-run" id="run-btn" onclick="runTest()">
+        ▶ Run Test
+      </button>
+      <span style="font-size:10px;font-family:var(--mono);color:var(--text3)">Enter to run</span>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-row">
+    <div class="setting">
+      <label>MODEL</label>
+      <select id="model-sel">
+        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+        <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+      </select>
+    </div>
+    <div class="setting">
+      <label>TEMPERATURE</label>
+      <input type="range" id="temp" min="0" max="1" step="0.1" value="0.7" oninput="document.getElementById('temp-val').textContent=this.value"/>
+      <span class="val" id="temp-val">0.7</span>
+    </div>
+    <div class="setting">
+      <label>MAX TOKENS</label>
+      <select id="max-tokens">
+        <option value="256">256</option>
+        <option value="512" selected>512</option>
+        <option value="1024">1024</option>
+        <option value="2048">2048</option>
+      </select>
+    </div>
+    <div class="spacer"></div>
+    <div style="font-size:11px;font-family:var(--mono);color:var(--text3)">
+      runs: <span id="run-count" style="color:var(--accent)">0</span>
+    </div>
+  </div>
+
+  <!-- Winner banner -->
+  <div id="winner-area"></div>
+
+  <!-- Results -->
+  <div class="section-label">Results</div>
+  <div class="results-grid" id="results-grid">
+    <div class="result-panel">
+      <div class="result-header">
+        <div class="result-meta">
+          <span class="badge a">A</span>
+          <span class="meta-chip">waiting...</span>
+        </div>
+      </div>
+      <div class="result-body empty">Run a test to see output here.</div>
+    </div>
+    <div class="result-panel">
+      <div class="result-header">
+        <div class="result-meta">
+          <span class="badge b">B</span>
+          <span class="meta-chip">waiting...</span>
+        </div>
+      </div>
+      <div class="result-body empty">Run a test to see output here.</div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="history-panel">
+    <div class="history-header">
+      <div class="history-title">📋 Test History <span class="badge" id="history-count">0 runs</span></div>
+      <button class="clear-btn" onclick="clearHistory()">Clear all</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <div class="history-empty">No tests run yet. Results will appear here.</div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="section-label" style="margin-top:2rem">Quick Experiments — Click to load</div>
+  <div class="tips-grid">
+    <div class="tip-card" onclick="loadTip('basic')">
+      <div class="tip-title">🎯 Basic vs Specific</div>
+      <div class="tip-desc">Compare a vague prompt against one with clear instructions and constraints.</div>
+    </div>
+    <div class="tip-card" onclick="loadTip('role')">
+      <div class="tip-title">🎭 No Role vs With Role</div>
+      <div class="tip-desc">See how assigning a persona to the AI changes its output style and quality.</div>
+    </div>
+    <div class="tip-card" onclick="loadTip('examples')">
+      <div class="tip-title">📌 Zero-shot vs Few-shot</div>
+      <div class="tip-desc">Compare prompts with and without examples to see the consistency difference.</div>
+    </div>
+    <div class="tip-card" onclick="loadTip('format')">
+      <div class="tip-title">📐 Unstructured vs Formatted</div>
+      <div class="tip-desc">See how telling the AI exactly what format to use improves reliability.</div>
+    </div>
+    <div class="tip-card" onclick="loadTip('tone')">
+      <div class="tip-title">🎨 Formal vs Casual Tone</div>
+      <div class="tip-desc">Control how the AI sounds by specifying tone in your system prompt.</div>
+    </div>
+    <div class="tip-card" onclick="loadTip('chain')">
+      <div class="tip-title">🔗 Simple vs Chain-of-Thought</div>
+      <div class="tip-desc">Ask the AI to think step-by-step and compare the reasoning quality.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── State ─────────────────────────────────────────────────────────────────
+  let apiKey = localStorage.getItem('gemini_key') || '';
+  let history = JSON.parse(localStorage.getItem('prompt_history') || '[]');
+  let runCount = parseInt(localStorage.getItem('run_count') || '0');
+  let ratings = { a: 0, b: 0 };
+
+  // ── API Key ───────────────────────────────────────────────────────────────
+  function saveKey() {
+    const val = document.getElementById('api-input').value.trim();
+    if (!val) return;
+    apiKey = val;
+    localStorage.setItem('gemini_key', apiKey);
+    document.getElementById('api-row').innerHTML = `
+      <span class="key-saved">✓ Gemini connected</span>
+      <button class="clear-btn" style="margin-left:8px" onclick="resetKey()">Change</button>`;
+  }
+  function resetKey() { apiKey=''; localStorage.removeItem('gemini_key'); location.reload(); }
+  if (apiKey) {
+    document.getElementById('api-input').value = apiKey;
+    saveKey();
+  }
+
+  // ── Run count ─────────────────────────────────────────────────────────────
+  document.getElementById('run-count').textContent = runCount;
+
+  // ── Keyboard shortcut ─────────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runTest();
+  });
+  document.getElementById('user-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runTest(); }
+  });
+
+  // ── Gemini call ───────────────────────────────────────────────────────────
+  async function callGemini(systemPrompt, userPrompt) {
+    const model     = document.getElementById('model-sel').value;
+    const temp      = parseFloat(document.getElementById('temp').value);
+    const maxTokens = parseInt(document.getElementById('max-tokens').value);
+
+    const contents = [];
+    if (systemPrompt.trim()) {
+      contents.push({ role: 'user',  parts: [{ text: `[SYSTEM INSTRUCTIONS]\n${systemPrompt}\n\n[USER INPUT]\n${userPrompt}` }] });
+    } else {
+      contents.push({ role: 'user', parts: [{ text: userPrompt }] });
+    }
+
+    const t0 = Date.now();
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents,
+          generationConfig: { temperature: temp, maxOutputTokens: maxTokens }
+        })
+      }
+    );
+    const elapsed = Date.now() - t0;
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '(no response)';
+    const tokens = data.usageMetadata?.totalTokenCount || '—';
+    return { text, elapsed, tokens };
+  }
+
+  // ── Run test ──────────────────────────────────────────────────────────────
+  async function runTest() {
+    if (!apiKey) { alert('Please connect your Gemini API key first.'); return; }
+    const sysA = document.getElementById('system-a').value.trim();
+    const sysB = document.getElementById('system-b').value.trim();
+    const user = document.getElementById('user-input').value.trim();
+    if (!user) { alert('Please enter a user input message.'); return; }
+    if (!sysA && !sysB) { alert('Please enter at least one system prompt.'); return; }
+
+    ratings = { a: 0, b: 0 };
+    document.getElementById('winner-area').innerHTML = '';
+
+    const btn = document.getElementById('run-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Running…';
+
+    setResultLoading('a');
+    setResultLoading('b');
+
+    const [resA, resB] = await Promise.allSettled([
+      sysA ? callGemini(sysA, user) : Promise.resolve(null),
+      sysB ? callGemini(sysB, user) : Promise.resolve(null),
+    ]);
+
+    const outA = resA.status === 'fulfilled' ? resA.value : { text: '❌ Error: ' + resA.reason.message, elapsed: 0, tokens: 0 };
+    const outB = resB.status === 'fulfilled' ? resB.value : { text: '❌ Error: ' + resB.reason.message, elapsed: 0, tokens: 0 };
+
+    if (!sysA) { setResultEmpty('a'); } else { setResult('a', outA); }
+    if (!sysB) { setResultEmpty('b'); } else { setResult('b', outB); }
+
+    // Save to history
+    const entry = {
+      id: Date.now(),
+      ts: new Date().toLocaleTimeString(),
+      user,
+      sysA: sysA || '(none)',
+      sysB: sysB || '(none)',
+      outA: outA.text,
+      outB: outB.text,
+      timeA: outA.elapsed,
+      timeB: outB.elapsed,
+    };
+    history.unshift(entry);
+    if (history.length > 30) history = history.slice(0, 30);
+    localStorage.setItem('prompt_history', JSON.stringify(history));
+
+    runCount++;
+    localStorage.setItem('run_count', runCount);
+    document.getElementById('run-count').textContent = runCount;
+
+    renderHistory();
+
+    btn.disabled = false;
+    btn.innerHTML = '▶ Run Test';
+  }
+
+  // ── Result rendering ──────────────────────────────────────────────────────
+  function setResultLoading(side) {
+    const grid = document.getElementById('results-grid');
+    const idx = side === 'a' ? 0 : 1;
+    const panel = grid.children[idx];
+    panel.querySelector('.result-header .result-meta').innerHTML = `
+      <span class="badge ${side}">${side.toUpperCase()}</span>
+      <span class="meta-chip">running…</span>`;
+    panel.querySelector('.result-body').className = 'result-body loading';
+    panel.querySelector('.result-body').innerHTML = '<div class="spinner"></div> Waiting for Gemini…';
+    if (panel.querySelector('.result-footer')) panel.querySelector('.result-footer').remove();
+  }
+
+  function setResultEmpty(side) {
+    const grid = document.getElementById('results-grid');
+    const idx = side === 'a' ? 0 : 1;
+    const panel = grid.children[idx];
+    panel.querySelector('.result-header .result-meta').innerHTML = `
+      <span class="badge ${side}">${side.toUpperCase()}</span>
+      <span class="meta-chip">no prompt</span>`;
+    panel.querySelector('.result-body').className = 'result-body empty';
+    panel.querySelector('.result-body').textContent = 'No system prompt entered for this side.';
+  }
+
+  function setResult(side, out) {
+    const grid = document.getElementById('results-grid');
+    const idx = side === 'a' ? 0 : 1;
+    const panel = grid.children[idx];
+
+    panel.querySelector('.result-header .result-meta').innerHTML = `
+      <span class="badge ${side}">${side.toUpperCase()}</span>
+      <span class="meta-chip time">⏱ ${(out.elapsed/1000).toFixed(2)}s</span>
+      <span class="meta-chip tokens">🔤 ${out.tokens} tokens</span>`;
+
+    const body = panel.querySelector('.result-body');
+    body.className = 'result-body';
+    body.textContent = out.text;
+
+    // Footer with rating + copy
+    if (panel.querySelector('.result-footer')) panel.querySelector('.result-footer').remove();
+    const footer = document.createElement('div');
+    footer.className = 'result-footer';
+    footer.innerHTML = `
+      <span class="rate-label">Rate:</span>
+      <div class="stars" id="stars-${side}">
+        ${[1,2,3,4,5].map(n => `<span class="star" onclick="rate('${side}',${n})" data-v="${n}">★</span>`).join('')}
+      </div>
+      <button class="copy-btn" onclick="copyResult('${side}')">Copy</button>`;
+    panel.appendChild(footer);
+  }
+
+  function rate(side, val) {
+    ratings[side] = val;
+    const stars = document.querySelectorAll(`#stars-${side} .star`);
+    stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v) <= val));
+    checkWinner();
+  }
+
+  function checkWinner() {
+    if (ratings.a === 0 || ratings.b === 0) return;
+    const area = document.getElementById('winner-area');
+    if (ratings.a === ratings.b) {
+      area.innerHTML = `<div class="winner-banner"><span class="winner-icon">🤝</span><div class="winner-text"><strong>It's a tie!</strong> Both prompts scored ${ratings.a}/5. Try tweaking one of them.</div></div>`;
+    } else {
+      const winner = ratings.a > ratings.b ? 'A' : 'B';
+      const score  = Math.max(ratings.a, ratings.b);
+      area.innerHTML = `<div class="winner-banner"><span class="winner-icon">🏆</span><div class="winner-text"><strong>Prompt ${winner} wins</strong> with ${score}/5 — copy it to your project!</div></div>`;
+    }
+  }
+
+  function copyResult(side) {
+    const grid = document.getElementById('results-grid');
+    const idx = side === 'a' ? 0 : 1;
+    const text = grid.children[idx].querySelector('.result-body').textContent;
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
+
+  function clearPrompt(side) {
+    document.getElementById(`system-${side}`).value = '';
+  }
+
+  // ── History ───────────────────────────────────────────────────────────────
+  function renderHistory() {
+    const list = document.getElementById('history-list');
+    document.getElementById('history-count').textContent = `${history.length} run${history.length!==1?'s':''}`;
+    if (!history.length) {
+      list.innerHTML = '<div class="history-empty">No tests run yet.</div>';
+      return;
+    }
+    list.innerHTML = history.map((h, i) => `
+      <div class="history-item" onclick="loadHistory(${i})">
+        <div>
+          <div class="history-item-prompt"><strong>Input:</strong> ${escHtml(h.user.slice(0,60))}${h.user.length>60?'…':''}</div>
+          <div class="history-item-prompt" style="margin-top:3px"><strong>A:</strong> ${escHtml((h.outA||'').slice(0,60))}…</div>
+        </div>
+        <div class="history-item-meta">
+          <span class="meta-chip time">⏱ ${(h.timeA/1000).toFixed(1)}s / ${(h.timeB/1000).toFixed(1)}s</span>
+          <span class="meta-chip">${h.ts}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function loadHistory(idx) {
+    const h = history[idx];
+    document.getElementById('system-a').value   = h.sysA === '(none)' ? '' : h.sysA;
+    document.getElementById('system-b').value   = h.sysB === '(none)' ? '' : h.sysB;
+    document.getElementById('user-input').value = h.user;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function clearHistory() {
+    history = [];
+    localStorage.removeItem('prompt_history');
+    renderHistory();
+  }
+
+  // ── Tip presets ───────────────────────────────────────────────────────────
+  const tips = {
+    basic: {
+      sysA: 'Rephrase the task.',
+      sysB: 'You are a productivity assistant. Rephrase the following task as a clear, concise, actionable to-do item starting with an action verb. Keep it under 10 words. Return ONLY the rephrased task, nothing else.',
+      user: 'email thing with the client'
+    },
+    role: {
+      sysA: 'Give feedback on this task description.',
+      sysB: 'You are a senior project manager with 15 years of experience. Give brief, direct feedback on this task description and suggest one improvement.',
+      user: 'need to do something about the website performance'
+    },
+    examples: {
+      sysA: 'Suggest a priority level (high, medium, or low) for this task.',
+      sysB: `Suggest a priority level for this task. Use these examples as a guide:
+"Server is down in production" → high
+"Update the readme file" → low
+"Fix checkout bug causing 5% order failures" → high
+"Rename a variable in the codebase" → low
+
+Reply with ONLY one word: high, medium, or low.`,
+      user: 'Migrate the database to the new server next week'
+    },
+    format: {
+      sysA: 'Break this goal into subtasks.',
+      sysB: `Break the goal into exactly 4 subtasks. Return ONLY a JSON array, no explanation, no markdown:
+[{"task":"subtask description","priority":"high|med|low","time":"e.g. 30 mins"}]`,
+      user: 'Launch a new landing page for our product'
+    },
+    tone: {
+      sysA: 'You are a task assistant. Help the user with their task.',
+      sysB: 'You are an encouraging, friendly productivity coach. Respond warmly and motivationally. Use simple language. Add a brief word of encouragement at the end.',
+      user: 'I need to finish the quarterly report by Friday but I keep procrastinating'
+    },
+    chain: {
+      sysA: 'What priority should this task be? Answer with high, medium, or low.',
+      sysB: `What priority should this task be? Think through it step by step:
+1. Consider the impact if not done
+2. Consider the urgency / deadline
+3. Consider who is affected
+Then give your final answer as: Priority: [high/medium/low]
+Reason: [one sentence]`,
+      user: 'Update the SSL certificate that expires in 3 weeks'
+    }
+  };
+
+  function loadTip(key) {
+    const t = tips[key];
+    document.getElementById('system-a').value   = t.sysA;
+    document.getElementById('system-b').value   = t.sysB;
+    document.getElementById('user-input').value = t.user;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  renderHistory();
+
+  // Load a starter tip
+  loadTip('basic');
+</script>
+</body>
+</html>
