@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #faf8f3;
+      --surface:   #ffffff;
+      --surface2:  #f3f0e8;
+      --surface3:  #ebe7db;
+      --border:    rgba(0,0,0,0.08);
+      --border2:   rgba(0,0,0,0.14);
+      --text:      #1a1814;
+      --text2:     #6b6456;
+      --text3:     #a89e90;
+      --accent:    #2d6a4f;
+      --accent2:   #52b788;
+      --accent-bg: #e8f5ee;
+      --user-bg:   #1a1814;
+      --user-text: #faf8f3;
+      --red:       #c1440e;
+      --red-bg:    #fdf0eb;
+      --yellow:    #b5830a;
+      --yellow-bg: #fdf6e3;
+      --serif:     'Lora', Georgia, serif;
+      --sans:      'DM Sans', sans-serif;
+      --radius:    12px;
+      --radius-lg: 20px;
+      --shadow:    0 2px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    .brand {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+    }
+    .brand span { color: var(--text3); font-weight: 400; font-size: 16px; }
+    .divider { width: 1px; height: 20px; background: var(--border2); flex-shrink: 0; }
+    .subject-pills { display: flex; gap: 6px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+    .subject-pills::-webkit-scrollbar { display: none; }
+    .pill {
+      height: 30px; padding: 0 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      font-size: 13px;
+      font-family: var(--sans);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .pill:hover { background: var(--surface2); color: var(--text); }
+    .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+
+    /* API key area in topbar */
+    .key-area { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .key-input {
+      height: 30px; padding: 0 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: monospace;
+      font-size: 12px;
+      outline: none;
+      width: 160px;
+      transition: border-color 0.15s;
+    }
+    .key-input:focus { border-color: var(--accent); }
+    .key-input::placeholder { color: var(--text3); }
+    .key-btn {
+      height: 30px; padding: 0 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--sans);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .key-btn:hover { opacity: 0.85; }
+    .key-status {
+      font-size: 12px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    @media (max-width: 680px) { .sidebar { display: none; } }
+
+    .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .custom-topic { display: flex; gap: 6px; }
+    .custom-topic input {
+      flex: 1;
+      height: 32px;
+      padding: 0 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--sans);
+      outline: none;
+    }
+    .custom-topic input:focus { border-color: var(--accent); }
+    .custom-topic input::placeholder { color: var(--text3); }
+    .go-btn {
+      height: 32px; padding: 0 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--sans);
+      cursor: pointer;
+    }
+    .go-btn:hover { opacity: 0.85; }
+
+    .tips-list { display: flex; flex-direction: column; gap: 4px; }
+    .tip-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5;
+      background: var(--surface2);
+      border-left: 3px solid var(--accent2);
+    }
+    .tip-item strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-box { background: var(--surface2); border-radius: 8px; padding: 10px; text-align: center; }
+    .stat-val { font-size: 20px; font-weight: 600; color: var(--accent); font-family: var(--serif); }
+    .stat-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+    .sidebar-footer { padding: 14px 16px; margin-top: auto; }
+    .new-chat-btn {
+      width: 100%;
+      height: 36px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text2);
+      font-size: 13px;
+      font-family: var(--sans);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .new-chat-btn:hover { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+
+    /* ── Chat area ── */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Subject banner */
+    .subject-banner {
+      padding: 10px 20px;
+      background: var(--accent-bg);
+      border-bottom: 1px solid rgba(45,106,79,0.12);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .subject-icon { font-size: 18px; }
+    .subject-name { font-size: 14px; font-weight: 600; color: var(--accent); }
+    .subject-desc { font-size: 12px; color: var(--text2); }
+    .subject-banner.hidden { display: none; }
+
+    /* Messages */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+    }
+    .messages::-webkit-scrollbar { width: 5px; }
+    .messages::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+
+    /* Welcome screen */
+    .welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      gap: 16px;
+    }
+    .welcome-icon { font-size: 48px; margin-bottom: 4px; }
+    .welcome-title { font-family: var(--serif); font-size: 28px; color: var(--text); }
+    .welcome-subtitle { font-size: 15px; color: var(--text2); max-width: 380px; line-height: 1.6; }
+    .starter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; width: 100%; max-width: 420px; }
+    .starter-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .starter-card:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .starter-card .s-icon { font-size: 18px; margin-bottom: 5px; display: block; }
+    .starter-card .s-text { font-size: 13px; color: var(--text2); line-height: 1.4; }
+    .starter-card .s-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+    /* Message bubbles */
+    .message { display: flex; gap: 12px; animation: msgIn 0.2s ease; }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .message.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .avatar.tutor { background: var(--accent-bg); border: 1px solid rgba(45,106,79,0.2); }
+    .avatar.user  { background: var(--user-bg); color: var(--user-text); font-size: 13px; font-weight: 600; }
+
+    .bubble {
+      max-width: 72%;
+      padding: 13px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .bubble.tutor {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-family: var(--sans);
+    }
+    .bubble.user {
+      background: var(--user-bg);
+      color: var(--user-text);
+      border-bottom-right-radius: 4px;
+    }
+
+    /* Typing in the bubble */
+    .bubble.tutor h3 { font-family: var(--serif); font-size: 16px; margin-bottom: 6px; color: var(--accent); }
+    .bubble.tutor p  { margin-bottom: 10px; }
+    .bubble.tutor p:last-child { margin-bottom: 0; }
+    .bubble.tutor ul, .bubble.tutor ol { padding-left: 18px; margin-bottom: 10px; }
+    .bubble.tutor li { margin-bottom: 4px; }
+    .bubble.tutor strong { color: var(--text); }
+    .bubble.tutor em { font-family: var(--serif); font-style: italic; }
+    .bubble.tutor code { background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-size: 13px; font-family: monospace; }
+    .bubble.tutor blockquote { border-left: 3px solid var(--accent2); padding-left: 12px; color: var(--text2); margin: 8px 0; font-style: italic; font-family: var(--serif); }
+
+    /* Typing indicator */
+    .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 6px 4px; }
+    .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); animation: bounce 1.2s infinite; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+    /* Message meta */
+    .msg-meta { font-size: 11px; color: var(--text3); margin-top: 4px; padding: 0 4px; }
+    .message.user .msg-meta { text-align: right; }
+
+    /* Follow-up suggestions */
+    .follow-ups { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .follow-up-btn {
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--accent2);
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-size: 12px;
+      font-family: var(--sans);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .follow-up-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* Input area */
+    .input-area {
+      padding: 14px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      transition: border-color 0.15s;
+    }
+    .input-row:focus-within { border-color: var(--accent); }
+    .msg-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-family: var(--sans);
+      color: var(--text);
+      resize: none;
+      max-height: 120px;
+      line-height: 1.5;
+    }
+    .msg-input::placeholder { color: var(--text3); }
+    .send-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .send-btn:hover { opacity: 0.85; }
+    .send-btn:active { transform: scale(0.94); }
+    .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .input-hint { font-size: 11px; color: var(--text3); margin-top: 8px; text-align: center; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: var(--bg);
+      padding: 9px 18px; border-radius: 20px;
+      font-size: 13px; box-shadow: var(--shadow-lg);
+      animation: fadeUp 0.2s ease; z-index: 999;
+      white-space: nowrap;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+    .spinner { width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="brand">AI Tutor <span>/ learn anything</span></div>
+  <div class="divider"></div>
+  <div class="subject-pills" id="subject-pills">
+    <button class="pill active" onclick="setSubject('general','🎓','General','Ask me anything')">General</button>
+    <button class="pill" onclick="setSubject('maths','📐','Mathematics','Algebra, calculus, geometry & more')">Maths</button>
+    <button class="pill" onclick="setSubject('science','🔬','Science','Physics, chemistry, biology')">Science</button>
+    <button class="pill" onclick="setSubject('history','📜','History','World events, civilisations & dates')">History</button>
+    <button class="pill" onclick="setSubject('coding','💻','Coding','Programming concepts & debugging')">Coding</button>
+    <button class="pill" onclick="setSubject('english','✍️','English','Writing, grammar & literature')">English</button>
+    <button class="pill" onclick="setSubject('ai','🤖','AI & ML','Artificial intelligence & machine learning')">AI & ML</button>
+  </div>
+  <div class="divider"></div>
+  <div class="key-area" id="key-area">
+    <input class="key-input" type="password" id="api-input" placeholder="Gemini API key…"/>
+    <button class="key-btn" onclick="saveKey()">Connect</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Custom Topic</div>
+      <div class="custom-topic">
+        <input type="text" id="custom-topic" placeholder="e.g. Quantum physics"/>
+        <button class="go-btn" onclick="setCustomTopic()">Go</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Learning Tips</div>
+      <div class="tips-list">
+        <div class="tip-item"><strong>Ask "Why?"</strong>Don't just accept answers — ask why something works.</div>
+        <div class="tip-item"><strong>Use examples</strong>Say "give me a real-world example" to make concepts stick.</div>
+        <div class="tip-item"><strong>Test yourself</strong>Type "quiz me on this" to check your understanding.</div>
+        <div class="tip-item"><strong>Go deeper</strong>Ask "explain this like I'm 10" or "give me more detail".</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Session Stats</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-val" id="stat-msgs">0</div><div class="stat-label">Messages</div></div>
+        <div class="stat-box"><div class="stat-val" id="stat-topics">0</div><div class="stat-label">Topics</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="new-chat-btn" onclick="newChat()">🗑 Clear conversation</button>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="subject-banner hidden" id="subject-banner">
+      <span class="subject-icon" id="banner-icon"></span>
+      <div>
+        <div class="subject-name" id="banner-name"></div>
+        <div class="subject-desc" id="banner-desc"></div>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <!-- Welcome screen -->
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🎓</div>
+        <div class="welcome-title">Your AI Tutor</div>
+        <div class="welcome-subtitle">Ask me anything — I'll explain concepts clearly, answer follow-up questions, and help you truly understand any topic.</div>
+        <div class="starter-grid">
+          <div class="starter-card" onclick="sendStarter('Explain how gravity works in simple terms')">
+            <span class="s-icon">🌍</span>
+            <div class="s-text"><strong>Science</strong>Explain how gravity works</div>
+          </div>
+          <div class="starter-card" onclick="sendStarter('What is machine learning and how does it work?')">
+            <span class="s-icon">🤖</span>
+            <div class="s-text"><strong>AI & ML</strong>What is machine learning?</div>
+          </div>
+          <div class="starter-card" onclick="sendStarter('Explain the Pythagorean theorem with examples')">
+            <span class="s-icon">📐</span>
+            <div class="s-text"><strong>Maths</strong>Pythagorean theorem</div>
+          </div>
+          <div class="starter-card" onclick="sendStarter('What caused World War 1? Explain the key events.')">
+            <span class="s-icon">📜</span>
+            <div class="s-text"><strong>History</strong>Causes of World War 1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea class="msg-input" id="msg-input" placeholder="Ask your tutor anything…" rows="1"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line · Ask follow-ups freely</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── State ────────────────────────────────────────────────────────────────
+  let apiKey      = localStorage.getItem('gemini_key') || '';
+  let chatHistory = []; // [{role, content}]
+  let currentSubject = { id:'general', icon:'🎓', name:'General', desc:'Ask me anything' };
+  let topicsExplored = new Set();
+  let msgCount = 0;
+
+  // ── System prompt builder ─────────────────────────────────────────────────
+  function buildSystemPrompt(subject) {
+    return `You are a warm, expert AI tutor specialising in ${subject.name}. Your goal is to make learning enjoyable and effective.
+
+TEACHING STYLE:
+- Explain concepts clearly with simple language first, then add depth
+- Use real-world analogies and examples to make ideas concrete
+- Break complex topics into digestible steps
+- Celebrate curiosity and encourage follow-up questions
+- If a student seems confused, try a different explanation angle
+- Use **bold** for key terms, and structure longer answers with clear sections
+
+RESPONSE FORMAT:
+- For simple questions: 2-4 clear paragraphs
+- For complex topics: use a brief intro, then numbered steps or bullet points, then a summary
+- Always end with 1-2 short follow-up questions the student might want to explore next (label them "**Want to go deeper?**")
+- Keep responses focused — don't overwhelm with too much at once
+
+SUBJECT FOCUS: ${subject.name} — ${subject.desc}
+
+Remember: you're having a conversation, not writing an essay. Be encouraging, curious, and genuinely helpful.`;
+  }
+
+  // ── API Key ───────────────────────────────────────────────────────────────
+  function saveKey() {
+    const val = document.getElementById('api-input').value.trim();
+    if (!val) return;
+    apiKey = val;
+    localStorage.setItem('gemini_key', apiKey);
+    document.getElementById('key-area').innerHTML = `<span class="key-status">✓ Gemini connected <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;margin-left:4px" onclick="resetKey()">change</button></span>`;
+  }
+  function resetKey() { apiKey=''; localStorage.removeItem('gemini_key'); location.reload(); }
+  if (apiKey) { document.getElementById('api-input').value = apiKey; saveKey(); }
+
+  // ── Subject switching ────────────────────────────────────────────────────
+  function setSubject(id, icon, name, desc) {
+    currentSubject = { id, icon, name, desc };
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    event?.target?.classList.add('active');
+    document.getElementById('banner-icon').textContent = icon;
+    document.getElementById('banner-name').textContent = name;
+    document.getElementById('banner-desc').textContent = desc;
+    document.getElementById('subject-banner').classList.remove('hidden');
+    document.getElementById('msg-input').placeholder = `Ask about ${name.toLowerCase()}…`;
+    topicsExplored.add(id);
+    updateStats();
+  }
+
+  function setCustomTopic() {
+    const val = document.getElementById('custom-topic').value.trim();
+    if (!val) return;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    setSubject('custom', '📖', val, `Deep dive into ${val}`);
+    document.getElementById('custom-topic').value = '';
+  }
+
+  // ── Auto-resize textarea ──────────────────────────────────────────────────
+  const msgInput = document.getElementById('msg-input');
+  msgInput.addEventListener('input', () => {
+    msgInput.style.height = 'auto';
+    msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+  });
+  msgInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  // ── Send message ──────────────────────────────────────────────────────────
+  async function sendMessage(text) {
+    text = text || msgInput.value.trim();
+    if (!text) return;
+    if (!apiKey) { showToast('⚠️ Please connect your Gemini API key first.'); return; }
+
+    hideWelcome();
+    msgInput.value = '';
+    msgInput.style.height = 'auto';
+
+    appendMessage('user', text);
+    chatHistory.push({ role: 'user', content: text });
+    msgCount++;
+    updateStats();
+
+    const typingId = appendTyping();
+    document.getElementById('send-btn').disabled = true;
+
+    try {
+      const response = await callGemini();
+      removeTyping(typingId);
+      chatHistory.push({ role: 'model', content: response });
+      appendMessage('tutor', response);
+    } catch(e) {
+      removeTyping(typingId);
+      appendMessage('tutor', '❌ Sorry, I ran into an error: ' + e.message + '. Please check your API key and try again.', true);
+    }
+
+    document.getElementById('send-btn').disabled = false;
+    scrollToBottom();
+  }
+
+  function sendStarter(text) {
+    document.getElementById('msg-input').value = text;
+    sendMessage(text);
+  }
+
+  // ── Gemini API (with full chat history) ──────────────────────────────────
+  async function callGemini() {
+    const system = buildSystemPrompt(currentSubject);
+
+    // Build contents array — prepend system as first user turn
+    const contents = [];
+
+    // System context as a special first exchange
+    contents.push({ role: 'user',  parts: [{ text: `[TUTOR INSTRUCTIONS]\n${system}\n\nReady to help!` }] });
+    contents.push({ role: 'model', parts: [{ text: `I'm ready! I'll be your ${currentSubject.name} tutor. Ask me anything!` }] });
+
+    // Full conversation history
+    chatHistory.forEach(msg => {
+      contents.push({
+        role:  msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      });
+    });
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+        })
+      }
+    );
+
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '(no response)';
+  }
+
+  // ── Render messages ───────────────────────────────────────────────────────
+  function hideWelcome() {
+    const w = document.getElementById('welcome');
+    if (w) w.remove();
+  }
+
+  function appendMessage(role, text, isError) {
+    const container = document.getElementById('messages');
+    const isUser = role === 'user';
+    const time = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+
+    const div = document.createElement('div');
+    div.className = `message ${role}`;
+
+    // Avatar
+    const avatar = document.createElement('div');
+    avatar.className = `avatar ${role}`;
+    avatar.textContent = isUser ? 'You' : '🎓';
+
+    // Bubble
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${role}`;
+
+    if (isUser) {
+      bubble.textContent = text;
+    } else {
+      bubble.innerHTML = formatResponse(text);
+      // Extract and add follow-up suggestions
+      const followUps = extractFollowUps(text);
+      if (followUps.length) {
+        const fuDiv = document.createElement('div');
+        fuDiv.className = 'follow-ups';
+        followUps.forEach(q => {
+          const btn = document.createElement('button');
+          btn.className = 'follow-up-btn';
+          btn.textContent = q;
+          btn.onclick = () => sendMessage(q);
+          fuDiv.appendChild(btn);
+        });
+        bubble.appendChild(fuDiv);
+      }
+    }
+
+    // Meta
+    const meta = document.createElement('div');
+    meta.className = 'msg-meta';
+    meta.textContent = time;
+
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+    if (isUser) wrap.style.alignItems = 'flex-end';
+    wrap.appendChild(bubble);
+    wrap.appendChild(meta);
+
+    div.appendChild(avatar);
+    div.appendChild(wrap);
+    container.appendChild(div);
+    scrollToBottom();
+  }
+
+  function appendTyping() {
+    const container = document.getElementById('messages');
+    const id = 'typing-' + Date.now();
+    const div = document.createElement('div');
+    div.className = 'message tutor';
+    div.id = id;
+    div.innerHTML = `
+      <div class="avatar tutor">🎓</div>
+      <div class="bubble tutor">
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>`;
+    container.appendChild(div);
+    scrollToBottom();
+    return id;
+  }
+
+  function removeTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+
+  function scrollToBottom() {
+    const m = document.getElementById('messages');
+    m.scrollTop = m.scrollHeight;
+  }
+
+  // ── Format tutor response (markdown-lite) ─────────────────────────────────
+  function formatResponse(text) {
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      // Bold
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // Italic
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // Code
+      .replace(/`(.+?)`/g, '<code>$1</code>')
+      // Blockquote
+      .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+      // H3
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      // Bullet lists
+      .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+      // Numbered lists
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+      // Paragraphs (double newline)
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^(.+)$/, '<p>$1</p>');
+  }
+
+  // Extract "Want to go deeper?" follow-up questions
+  function extractFollowUps(text) {
+    const match = text.match(/Want to go deeper\?(.+?)(?:\n\n|$)/s);
+    if (!match) return [];
+    const lines = match[1].split('\n').map(l => l.replace(/^[\-\*\d.]\s*/, '').trim()).filter(Boolean);
+    return lines.slice(0, 3);
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  function updateStats() {
+    document.getElementById('stat-msgs').textContent   = msgCount;
+    document.getElementById('stat-topics').textContent = topicsExplored.size || 1;
+  }
+
+  // ── New chat ──────────────────────────────────────────────────────────────
+  function newChat() {
+    chatHistory = [];
+    msgCount = 0;
+    topicsExplored.clear();
+    updateStats();
+    const m = document.getElementById('messages');
+    m.innerHTML = `<div class="welcome" id="welcome">
+      <div class="welcome-icon">🎓</div>
+      <div class="welcome-title">Your AI Tutor</div>
+      <div class="welcome-subtitle">Ask me anything — I'll explain concepts clearly, answer follow-up questions, and help you truly understand any topic.</div>
+      <div class="starter-grid">
+        <div class="starter-card" onclick="sendStarter('Explain how gravity works in simple terms')"><span class="s-icon">🌍</span><div class="s-text"><strong>Science</strong>Explain how gravity works</div></div>
+        <div class="starter-card" onclick="sendStarter('What is machine learning and how does it work?')"><span class="s-icon">🤖</span><div class="s-text"><strong>AI & ML</strong>What is machine learning?</div></div>
+        <div class="starter-card" onclick="sendStarter('Explain the Pythagorean theorem with examples')"><span class="s-icon">📐</span><div class="s-text"><strong>Maths</strong>Pythagorean theorem</div></div>
+        <div class="starter-card" onclick="sendStarter('What caused World War 1? Explain the key events.')"><span class="s-icon">📜</span><div class="s-text"><strong>History</strong>Causes of World War 1</div></div>
+      </div>
+    </div>`;
+  }
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  updateStats();
+</script>
+</body>
+</html>
